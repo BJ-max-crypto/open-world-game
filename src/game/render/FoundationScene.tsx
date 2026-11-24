@@ -2,13 +2,16 @@
 
 import { Suspense, useEffect, useRef, type RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Sky } from "@react-three/drei";
 import { Physics, type RapierRigidBody } from "@react-three/rapier";
 import { ThirdPersonCamera } from "@/game/camera/ThirdPersonCamera";
 import { FOUNDATION } from "@/game/config/foundation";
 import type { KeyState } from "@/game/input/useKeyState";
 import type { LookState } from "@/game/input/usePointerLock";
 import { ThirdPersonPlayer } from "@/game/player/ThirdPersonPlayer";
-import { TestYard } from "@/game/world/TestYard";
+import { CoastDirector } from "@/game/sim/CoastDirector";
+import type { CoastSession, SessionChange } from "@/game/session/CoastSession";
+import { CoastDistrict } from "@/game/world/coast/CoastDistrict";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
   useEffect(() => {
@@ -21,45 +24,66 @@ interface FoundationSceneProps {
   look: RefObject<LookState | null>;
   keys: RefObject<KeyState | null>;
   canvasRef: RefObject<HTMLCanvasElement | null>;
+  sessionRef: RefObject<CoastSession | null>;
+  haltRef: RefObject<boolean>;
+  collectedIds: readonly string[];
+  waypoint: { x: number; z: number } | null;
   onReady: () => void;
+  onSession: (kind: SessionChange) => void;
 }
 
-export function FoundationScene({ look, keys, canvasRef, onReady }: FoundationSceneProps) {
+export function FoundationScene({
+  look,
+  keys,
+  canvasRef,
+  sessionRef,
+  haltRef,
+  collectedIds,
+  waypoint,
+  onReady,
+  onSession,
+}: FoundationSceneProps) {
   const bodyRef = useRef<RapierRigidBody>(null);
 
   return (
     <Canvas
       className="nl-canvas"
       shadows
-      dpr={[1, 1.75]}
-      camera={{ fov: 48, near: 0.08, far: 200, position: [0, 4, 16] }}
+      dpr={[1, 1.6]}
+      camera={{ fov: 46, near: 0.08, far: 260, position: [-6, 4, -26] }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
         canvasRef.current = gl.domElement;
       }}
     >
-      <color attach="background" args={["#141a22"]} />
+      <color attach="background" args={["#c4a48c"]} />
+      <fog attach="fog" args={["#d2b39a", 36, 130]} />
       <Suspense fallback={null}>
+        <Sky sunPosition={[-55, 7, -28]} turbidity={8} rayleigh={1.8} mieCoefficient={0.006} mieDirectionalG={0.82} />
         <Physics gravity={[0, FOUNDATION.gravity, 0]}>
           <MarkReady onReady={onReady} />
-          <hemisphereLight args={["#b7c4d6", "#2a241e", 0.42]} />
-          <ambientLight intensity={0.22} />
+          <hemisphereLight args={["#f0c9a0", "#3a342c", 0.38]} />
+          <ambientLight intensity={0.16} />
           <directionalLight
-            position={[16, 24, 10]}
-            intensity={1.55}
+            position={[-28, 18, -16]}
+            intensity={1.85}
+            color="#ffc48a"
             castShadow
             shadow-mapSize={[2048, 2048]}
             shadow-camera-near={2}
-            shadow-camera-far={70}
-            shadow-camera-left={-28}
-            shadow-camera-right={28}
-            shadow-camera-top={28}
-            shadow-camera-bottom={-28}
-            shadow-bias={-0.00035}
+            shadow-camera-far={120}
+            shadow-camera-left={-55}
+            shadow-camera-right={55}
+            shadow-camera-top={55}
+            shadow-camera-bottom={-55}
+            shadow-bias={-0.0004}
+            shadow-normalBias={0.04}
           />
-          <TestYard />
-          <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} />
+          <directionalLight position={[18, 10, 24]} intensity={0.28} color="#9eb4c9" />
+          <CoastDistrict collectedIds={collectedIds} waypoint={waypoint} />
+          <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} haltRef={haltRef} />
           <ThirdPersonCamera bodyRef={bodyRef} look={look} />
+          <CoastDirector bodyRef={bodyRef} keys={keys} sessionRef={sessionRef} onChange={onSession} />
         </Physics>
       </Suspense>
     </Canvas>

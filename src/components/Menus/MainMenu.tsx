@@ -13,18 +13,18 @@ export function MainMenu() {
 
   return (
     <div className="nl-hero-copy">
-      <p className="nl-kicker">Open district</p>
+      <p className="nl-kicker">Waterfront</p>
       <h1>
-        Night rate
+        The first
         <br />
-        still open.
+        job is waiting.
       </h1>
       <p className="nl-lede">
-        Walk a small test yard in third person. Click the street, then look with the mouse.
+        Walk the marina, take a delivery from Inez, and bring three packages back from the warehouse.
       </p>
       <div className="nl-hero-actions">
         <Link className="nl-button" href={callsign ? "/game" : "/login"}>
-          {callsign ? `Enter as ${callsign}` : "Enter the city"}
+          {callsign ? `Enter as ${callsign}` : "Enter the coast"}
         </Link>
         <Link className="nl-button nl-button-ghost" href="/login">
           Sign in

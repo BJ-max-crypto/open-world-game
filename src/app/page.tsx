@@ -5,11 +5,11 @@ export default function HomePage() {
     <main className="nl-home">
       <div className="nl-sky" />
       <header className="nl-topbar">
-        <span>Northline</span>
-        <span>Harbor night</span>
+        <span>The Coast</span>
+        <span>Waterfront</span>
       </header>
       <MainMenu />
-      <p className="nl-footer-note">WASD to move · Shift to sprint · Space to jump · mouse to look</p>
+      <p className="nl-footer-note">WASD to move · Shift to sprint · Space to jump · E to interact · mouse to look</p>
       <div className="nl-skyline" aria-hidden>
         <i style={{ height: "42%" }} />
         <i style={{ height: "68%" }} />

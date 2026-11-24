@@ -11,6 +11,9 @@ export function ControlGuide() {
         <kbd>Space</kbd>Jump
       </p>
       <p>
+        <kbd>E</kbd>Interact
+      </p>
+      <p>
         <kbd>Mouse</kbd>Look around
       </p>
       <p>
