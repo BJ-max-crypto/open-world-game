@@ -36,7 +36,7 @@ export function HUD({ snapshot }: { snapshot: GameSnapshot }) {
               {prompt.label}
             </p>
           ))}
-          {!snapshot.settled ? <p className="nl-hint">Click the street to look. WASD walks. F is the cab. E is a door.</p> : null}
+          {!snapshot.settled ? <p className="nl-hint">Click the street to look. Arrow keys walk. F is the cab. E is a door.</p> : null}
         </div>
         <div className="nl-meters">
           {snapshot.driving ? (

@@ -2,7 +2,10 @@ export function ControlGuide() {
   return (
     <aside className="nl-guide" aria-label="Controls">
       <p>
-        <kbd>WASD</kbd>Move
+        <kbd>↑</kbd>
+        <kbd>↓</kbd>
+        <kbd>←</kbd>
+        <kbd>→</kbd>Move
       </p>
       <p>
         <kbd>Shift</kbd>Sprint

@@ -18,6 +18,28 @@ export function cameraBasis(yaw: number): { forward: Planar; right: Planar } {
   };
 }
 
+/**
+ * Ease a ground velocity toward `wish` times `targetSpeed`.
+ * `wish` is a unit vector, or zero when there is no direction.
+ * `rate` is acceleration or deceleration in meters per second squared.
+ */
+export function approachVelocity(
+  current: Planar,
+  wish: Planar,
+  targetSpeed: number,
+  rate: number,
+  dt: number,
+): Planar {
+  const targetX = wish.x * targetSpeed;
+  const targetZ = wish.z * targetSpeed;
+  const dx = targetX - current.x;
+  const dz = targetZ - current.z;
+  const distance = Math.hypot(dx, dz);
+  if (distance <= rate * dt) return { x: targetX, z: targetZ };
+  const step = (rate * dt) / distance;
+  return { x: current.x + dx * step, z: current.z + dz * step };
+}
+
 /** Unit wish direction on the ground plane. Opposite keys cancel. */
 export function wishDirection(yaw: number, input: MoveInput): Planar {
   const { forward, right } = cameraBasis(yaw);

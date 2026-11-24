@@ -1,76 +1,59 @@
-# Northline
+# THE COAST
 
-Northline is a small open district that runs in the browser. The city is built in code so the game plays before any art files are added. Drop glTF models into `public/models` later; the folders are already there.
+THE COAST is a browser third-person game. The playable build is one original waterfront district: walk it, take a delivery, and get paid. The city is still a designed blockout, not a finished metropolis. Meshes and colliders share one layout so Blender models can replace the blockout without moving gameplay.
 
 ## Run
 
 ```bash
 npm install
+npm test
 npm run dev
 ```
 
-Open the home page, pick a callsign, and enter the city.
+Open the home page and choose Enter the coast. There is no sign-in.
 
 | Key | Action |
 | --- | --- |
 | Click | Look around (pointer lock) |
-| WASD | Walk, or drive |
+| Arrow keys | Walk, relative to the camera |
 | Shift | Sprint |
-| Space | Jump on foot, brake in the cab |
-| F | Enter or leave the cab |
-| E | Buy or inspect a door |
-| M | City map. Click to drop a pin |
-| I | Pockets and properties |
-| Esc | Pause |
+| Space | Jump |
+| E | Talk, accept, or pick up |
+| Esc | Release the mouse |
 
-The first fare is the yellow cab on Pier 4. Drive it to the park in Harbor Heights, step out, and the fare pays $500. The Night Loft on Civic Core is $600, so the shift is what makes the door affordable. The Yard Office stays out of reach.
+Arrow keys and Space do not scroll the page while the game is open, unless focus is in a text field. Listeners are removed when the game unmounts.
 
-Saves stay in this browser. Cloud sync is optional.
+## What is playable
 
-## Layout
+The route is `/game`. A kinematic Rapier character starts on the marina sidewalk with $250. Inez Calder offers one delivery. Three packages sit at Warehouse 3. Returning them pays $500 once. Cash and mission state stay in `localStorage` under `coast-save-v1:<id>`.
+
+The district, defined in `src/game/world/coast/layout.ts`, has a coast road, an inland road, a cross street, sidewalks, a seawall, and these places: Marina Office, Salt, Harbor House, Market, Yard Shop, and Warehouse 3. Palms, lamps, parked cars, and the contact are solids in that same list. `CoastDistrict` draws them and gives each solid a cuboid collider.
+
+## How the live game is split
 
 ```
-public/                 models, textures, audio, fonts
-src/app/                home, city, login, settings
-src/game/engine/        loop, config, the Game object
-src/game/world/         districts, streets, lighting
-src/game/player/        body, input, camera
-src/game/vehicles/      the cab and parked traffic
-src/game/physics/       circle collision and gravity
-src/game/npcs/          sidewalk walkers
-src/game/missions/      First Fare
-src/game/economy/       cash and the ledger
-src/game/properties/    doors you can buy
-src/game/inventory/     what you carry
-src/game/audio/         footsteps, engine, stingers
-src/game/interaction/   nearby prompts
-src/components/         HUD, menus, map, management
-src/lib/supabase/       browser client, server client, proxy session refresh
-src/services/           profile, save, ledger
-supabase/migrations/    Postgres schema and row level security
-supabase/functions/     apply-transaction
+src/app/                 home, /game, settings, a /login redirect
+src/game/render/         the R3F canvas, lights, shadows
+src/game/player/         kinematic body, camera-relative movement
+src/game/camera/         follow camera with a ray that shortens the boom
+src/game/input/          key ref and pointer lock
+src/game/sim/            reads the body each frame and talks to the session
+src/game/session/        mission, cash, prompts, save snapshot
+src/game/missions/       the delivery as pure functions
+src/game/economy/        integer cash and a ledger entry
+src/game/interaction/    nearest prompt, with a little stickiness
+src/game/world/coast/    district layout and meshes
+src/components/          HUD, dialogue, control guide, menus
 ```
 
-## Supabase
+The frame loop does not copy position into React state. Input lives in refs. React renders when a prompt, panel, or save changes.
 
-The city runs with no project connected. Saves and the cash ledger stay in `localStorage`.
+Money changes only inside `CoastSession`. The HUD displays the snapshot. The delivery functions refuse an out-of-order turn-in and a second payout.
 
-To sync them:
+## Parked code
 
-1. Create a project and copy the URL and publishable key into `.env.local` (see `.env.example`).
-2. Apply `supabase/migrations/20261124140000_game_schema.sql`.
-3. Deploy `apply-transaction`. It accepts a signed-in user, checks the new balance against the previous ledger row, and inserts with the user's own RLS client.
+`src/game/engine`, the older districts, the cab, First Fare, properties, and the Supabase ledger are still in the repo. No page mounts them. Do not treat that code as the current game. Cloud accounts are not part of play.
 
-```bash
-supabase link --project-ref YOUR_PROJECT_ID
-supabase db push
-supabase functions deploy apply-transaction
-```
+## Assets
 
-The Next.js proxy (`src/proxy.ts`) refreshes the session with `getClaims()` when those keys exist. Profiles, saves, the ledger, properties, and inventory are readable only by the signed-in user. The new-user trigger lives in the `private` schema and is not exposed to the API. Callsigns in user metadata are display text only; policies use `auth.uid()`.
-
-Do not put a secret key in the Next app. The edge function reads its keys from the Supabase runtime.
-
-## Add a block
-
-District geometry lives in `src/game/world/District.ts`. Buildings, the pier, trees, and the water volumes are one list. `staticColliders()` is what the player and the cab collide with, and the meshes are built from that same list. `tests/city.test.ts` fails if a building covers a road, the spawn, the cab, or a door.
+`public/` is ready for models, textures, and audio. Until a model exists, a solid in `layout.ts` is both the visible box and the collider. Replace the mesh later and keep the footprint.
