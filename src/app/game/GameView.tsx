@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { ControlGuide } from "@/components/Controls/ControlGuide";
 import { CoastHud } from "@/components/HUD/CoastHud";
 import { MissionPanel } from "@/components/HUD/MissionPanel";
@@ -10,10 +9,11 @@ import { usePointerLock } from "@/game/input/usePointerLock";
 import { FoundationScene } from "@/game/render/FoundationScene";
 import { CoastSession, type CoastSnapshot, type SessionChange } from "@/game/session/CoastSession";
 import { readCoastSave, writeCoastSave } from "@/game/session/coastSave";
-import { restoreProfile } from "@/services/PlayerService";
+import { readStoredProfile } from "@/services/PlayerService";
+
+const LOCAL_PLAYER = "local";
 
 export function GameView() {
-  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const keys = useKeyState();
   const { locked, look, request } = usePointerLock(canvasRef);
@@ -44,25 +44,17 @@ export function GameView() {
   }, []);
 
   useEffect(() => {
-    let dead = false;
-    void restoreProfile().then((profile) => {
-      if (dead) return;
-      if (!profile) {
-        router.replace("/login");
-        return;
-      }
-      profileId.current = profile.id;
-      const session = new CoastSession(readCoastSave(profile.id));
-      sessionRef.current = session;
-      haltRef.current = session.suspended;
-      setSnap(session.snapshot());
-      setAllowed(true);
-    });
+    const id = readStoredProfile()?.id ?? LOCAL_PLAYER;
+    profileId.current = id;
+    const session = new CoastSession(readCoastSave(id));
+    sessionRef.current = session;
+    haltRef.current = session.suspended;
+    setSnap(session.snapshot());
+    setAllowed(true);
     return () => {
-      dead = true;
       if (noticeTimer.current) window.clearTimeout(noticeTimer.current);
     };
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (snap?.panel) document.exitPointerLock();
