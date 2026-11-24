@@ -7,6 +7,9 @@ This is the order of work. One milestone lands at a time. A line is not done unt
 - Browser scene on React Three Fiber, with Rapier, a follow camera, and pointer lock.
 - One waterfront district as a shared layout of meshes and colliders.
 - Arrow-key movement relative to the camera, with acceleration, sprint, and jump.
+- A rigged humanoid with idle, walk, run, jump, and land clips. The shipped mesh is a CC0 mannequin, not a final clothed character.
+- A north-up mini-map and an M map that share the district layout. The world keeps running while the map is open.
+- The Marina Office can be walked into. One door, two rooms, furniture collision.
 - One delivery mission, a $250 start, and a one-time $500 payout.
 - Local save for cash and that mission.
 - No sign-in on the way into the city.

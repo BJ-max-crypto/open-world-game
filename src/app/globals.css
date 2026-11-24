@@ -230,7 +230,62 @@ button.nl-look-gate span { color: var(--bone-dim); font-size: 0.9rem; }
   border-radius: 999px;
 }
 .nl-hud-bottom { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: end; }
-.nl-minimap { width: 148px; height: 148px; border-radius: 50%; background: #10150f; }
+.nl-minimap {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 6;
+  width: 168px;
+  height: 168px;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #1a242c;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+.nl-minimap canvas { width: 100%; height: 100%; display: block; }
+.nl-minimap span {
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #efe7da;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+.nl-worldmap {
+  position: absolute;
+  inset: 0.7rem;
+  z-index: 8;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 0.4rem;
+  padding: 0.65rem;
+  overflow: hidden;
+  background: rgba(16, 20, 26, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  color: var(--bone);
+}
+.nl-worldmap header { display: flex; justify-content: space-between; align-items: start; }
+.nl-worldmap h2 { margin: 0; font-family: Syne, sans-serif; font-size: 1.6rem; }
+.nl-worldmap header button {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.6rem;
+  padding: 0;
+}
+.nl-worldmap canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0.7rem;
+  cursor: grab;
+  background: #1a242c;
+}
+.nl-worldmap p, .nl-worldmap ul { margin: 0; color: var(--bone-dim); font-size: 0.85rem; }
+.nl-worldmap ul { display: flex; flex-wrap: wrap; gap: 0.8rem; list-style: none; padding: 0; }
 .nl-coast-prompt {
   position: absolute;
   left: 50%;

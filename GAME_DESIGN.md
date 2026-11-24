@@ -62,8 +62,10 @@ Inez is a stationary contact. Parked cars do not drive. There are no pedestrians
 
 ## Presentation
 
-The on-screen layer should feel like a game: cash, the current job, the objective, an interaction prompt, and later a mini-map, a phone, a pause menu, a transaction list, and ownership screens. The current HUD has cash, the mission, the objective, the package count, a notice, and the E prompt. There is no mini-map.
+The on-screen layer should feel like a game: cash, the current job, the objective, an interaction prompt, a mini-map, and later a phone, a pause menu, a transaction list, and ownership screens. The current HUD has cash, the mission, the objective, the package count, a notice, the E prompt, and a north-up mini-map. M opens the same map larger. The world keeps simulating. Walking keys are ignored until the map closes.
 
 ## Controls
 
-Arrow keys move. Shift sprints. Space jumps. E interacts. The mouse looks. Escape releases the pointer. Letter keys are not a second move set, so the control line stays one thing.
+Arrow keys move. Shift sprints. Space jumps. E interacts. M toggles the map. The mouse looks. Escape closes the map, or releases the pointer when the map is closed. Letter keys are not a second move set, so the control line stays one thing.
+
+The Marina Office is the first building you can walk into. The door is a gap in the wall. The desk and the inner rooms have collision. More interiors should reuse that shell instead of a separate empty scene.

@@ -5,7 +5,7 @@ import {
   approachVelocity,
   cameraOffset,
   dampAngle,
-  pullCameraIn,
+  cameraClearance,
   stepVerticalVelocity,
   wishDirection,
   yawToward,
@@ -57,10 +57,16 @@ test("jump only leaves the ground, and gravity pulls while airborne", () => {
   assert.equal(stepVerticalVelocity(0, false, true, -22, 0.016, 6), -22 * 0.016);
 });
 
-test("the camera boom shortens at a hit and keeps a minimum distance", () => {
-  assert.equal(pullCameraIn(5.6, null, 0.28, 0.9), 5.6);
-  assert.ok(Math.abs(pullCameraIn(5.6, 2, 0.28, 0.9) - 1.72) < 1e-6);
-  assert.equal(pullCameraIn(5.6, 0.2, 0.28, 0.9), 0.9);
+test("the camera stops short of a wall instead of crossing it", () => {
+  const open = cameraClearance(5.6, null, 0.4, 0.28, 0.9);
+  assert.deepEqual(open, { origin: "eye", along: 5.6 });
+  const far = cameraClearance(6.2, 3.4, 0.4, 0.28, 0.9);
+  assert.equal(far.origin, "eye");
+  assert.ok(Math.abs(far.along - 2.72) < 1e-6);
+  const close = cameraClearance(6.2, 0.7, 0.4, 0.28, 0.9);
+  assert.equal(close.origin, "shifted");
+  assert.ok(close.along < 0.7);
+  assert.ok(close.along > 0);
 });
 
 test("facing yaw points +Z along the wish and damping takes the short turn", () => {

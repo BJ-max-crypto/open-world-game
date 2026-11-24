@@ -101,13 +101,23 @@ export function cameraOffset(yaw: number, pitch: number, distance: number): { x:
   };
 }
 
-/** Shorten the camera boom when a collider sits between the eye and the desired camera. */
-export function pullCameraIn(
+/**
+ * Where to put the camera after a ray that started `shift` meters in front of
+ * the eye (toward the character, away from the camera). A close wall wins over
+ * `minDistance`, so the camera stays on the near side of the surface.
+ * `along` is measured from `origin`: "eye", or "shifted" when the eye is
+ * already against or inside the hit.
+ */
+export function cameraClearance(
   distance: number,
   hitToi: number | null,
+  shift: number,
   padding: number,
   minDistance: number,
-): number {
-  if (hitToi == null) return distance;
-  return Math.max(minDistance, Math.min(distance, hitToi - padding));
+): { origin: "eye" | "shifted"; along: number } {
+  if (hitToi == null) return { origin: "eye", along: distance };
+  const fromEye = hitToi - shift - padding;
+  if (fromEye >= minDistance) return { origin: "eye", along: Math.min(distance, fromEye) };
+  const beforeHit = Math.max(0.08, hitToi - padding);
+  return { origin: "shifted", along: Math.min(beforeHit, distance + shift) };
 }
