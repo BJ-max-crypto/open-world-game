@@ -5,9 +5,9 @@ import { useFrame } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody, useRapier, type RapierCollider, type RapierRigidBody } from "@react-three/rapier";
 import type { Group } from "three";
 import { FOUNDATION } from "@/game/config/foundation";
-import { consumePressed, type KeyState } from "@/game/input/useKeyState";
+import { consumePressed, movementInput, type KeyState } from "@/game/input/useKeyState";
 import type { LookState } from "@/game/input/usePointerLock";
-import { dampAngle, wishDirection, stepVerticalVelocity, yawToward } from "@/game/player/movement";
+import { approachVelocity, dampAngle, wishDirection, stepVerticalVelocity, yawToward } from "@/game/player/movement";
 
 interface ThirdPersonPlayerProps {
   bodyRef: RefObject<RapierRigidBody | null>;
@@ -24,6 +24,7 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef }: ThirdPersonP
   const controllerRef = useRef<ReturnType<typeof world.createCharacterController> | null>(null);
   const vy = useRef(0);
   const grounded = useRef(false);
+  const velocity = useRef({ x: 0, z: 0 });
 
   useEffect(() => {
     const controller = world.createCharacterController(FOUNDATION.skin);
@@ -51,17 +52,14 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef }: ThirdPersonP
     const dt = Math.min(delta, 1 / 30);
     const halted = haltRef?.current === true;
     const held = keyState.held;
-    const wish = halted
-      ? { x: 0, z: 0 }
-      : wishDirection(lookState.yaw, {
-          forward: held.has("KeyW"),
-          back: held.has("KeyS"),
-          left: held.has("KeyA"),
-          right: held.has("KeyD"),
-        });
+    const wish = halted ? { x: 0, z: 0 } : wishDirection(lookState.yaw, movementInput(held));
     const moving = wish.x !== 0 || wish.z !== 0;
     const sprint = held.has("ShiftLeft") || held.has("ShiftRight");
-    const speed = sprint && moving ? FOUNDATION.sprintSpeed : FOUNDATION.walkSpeed;
+    const targetSpeed = !moving || halted ? 0 : sprint ? FOUNDATION.sprintSpeed : FOUNDATION.walkSpeed;
+    const rate = moving && !halted ? FOUNDATION.acceleration : FOUNDATION.deceleration;
+    velocity.current = halted
+      ? { x: 0, z: 0 }
+      : approachVelocity(velocity.current, wish, targetSpeed, rate, dt);
     const jumpPressed = consumePressed(keyState, "Space");
     const jump = !halted && jumpPressed;
     let vertical = stepVerticalVelocity(vy.current, grounded.current, jump, FOUNDATION.gravity, dt, FOUNDATION.jumpVelocity);
@@ -70,9 +68,9 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef }: ThirdPersonP
     else controller.enableSnapToGround(FOUNDATION.snapDistance);
 
     controller.computeColliderMovement(collider, {
-      x: wish.x * speed * dt,
+      x: velocity.current.x * dt,
       y: vertical * dt,
-      z: wish.z * speed * dt,
+      z: velocity.current.z * dt,
     });
     const corrected = controller.computedMovement();
     const pos = body.translation();
@@ -89,8 +87,14 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef }: ThirdPersonP
     vy.current = vertical;
 
     const visual = visualRef.current;
-    if (visual && moving) {
-      visual.rotation.y = dampAngle(visual.rotation.y, yawToward(wish.x, wish.z), FOUNDATION.turnSharpness, dt);
+    const travel = Math.hypot(velocity.current.x, velocity.current.z);
+    if (visual && travel > 0.35) {
+      visual.rotation.y = dampAngle(
+        visual.rotation.y,
+        yawToward(velocity.current.x, velocity.current.z),
+        FOUNDATION.turnSharpness,
+        dt,
+      );
     }
   });
 

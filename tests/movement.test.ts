@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { movementInput } from "../src/game/input/useKeyState.ts";
 import {
+  approachVelocity,
   cameraOffset,
   dampAngle,
   pullCameraIn,
@@ -16,6 +18,28 @@ test("forward at yaw 0 walks toward -Z and right is +X", () => {
   const right = wishDirection(0, { forward: false, back: false, left: false, right: true });
   assert.ok(right.x > 0.99);
   assert.ok(Math.abs(right.z) < 1e-6);
+});
+
+test("ground speed eases toward the wish and back to a stop", () => {
+  const eased = approachVelocity({ x: 0, z: 0 }, { x: 0, z: -1 }, 4.6, 16, 0.1);
+  assert.ok(Math.abs(eased.x) < 1e-6);
+  assert.ok(Math.abs(eased.z + 1.6) < 1e-6);
+  const stopped = approachVelocity(eased, { x: 0, z: 0 }, 0, 28, 0.02);
+  assert.ok(stopped.z > eased.z && stopped.z < 0);
+  const rest = approachVelocity(eased, { x: 0, z: 0 }, 0, 28, 1);
+  assert.equal(rest.x, 0);
+  assert.equal(rest.z, 0);
+});
+
+test("arrow keys move and letter keys do not", () => {
+  const arrows = movementInput({
+    has: (code) => code === "ArrowUp" || code === "ArrowLeft",
+  });
+  assert.deepEqual(arrows, { forward: true, back: false, left: true, right: false });
+  const letters = movementInput({
+    has: (code) => code === "KeyW" || code === "KeyA" || code === "KeyS" || code === "KeyD",
+  });
+  assert.deepEqual(letters, { forward: false, back: false, left: false, right: false });
 });
 
 test("opposite keys cancel and diagonals stay unit length", () => {

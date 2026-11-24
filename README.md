@@ -1,11 +1,9 @@
-# Northline
+# THE COAST
 
-A browser district you can walk, drive, and buy a room in.
+A browser waterfront you can walk. The design, the current build, and the milestone order are in [PROJECT.md](PROJECT.md), [GAME_DESIGN.md](GAME_DESIGN.md), and [ROADMAP.md](ROADMAP.md).
 
 ```bash
 npm install
 npm test
 npm run dev
 ```
-
-The map, controls, save format, and optional Supabase setup are in [PROJECT.md](PROJECT.md).

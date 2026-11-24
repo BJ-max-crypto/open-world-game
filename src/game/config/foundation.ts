@@ -2,6 +2,10 @@
 export const FOUNDATION = {
   walkSpeed: 4.6,
   sprintSpeed: 8.2,
+  /** Meters per second squared while a direction is held. */
+  acceleration: 16,
+  /** Meters per second squared after the direction is released. */
+  deceleration: 28,
   jumpVelocity: 6.4,
   gravity: -22,
   capsuleHalf: 0.46,

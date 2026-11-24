@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
+import type { MoveInput } from "@/game/player/movement";
 
 export interface KeyState {
   held: Set<string>;
@@ -18,6 +19,20 @@ export function consumePressed(state: KeyState, code: string): boolean {
   return true;
 }
 
+/** Arrow keys are the movement set. Letter keys do not walk. */
+export function movementInput(held: { has(code: string): boolean }): MoveInput {
+  return {
+    forward: held.has("ArrowUp"),
+    back: held.has("ArrowDown"),
+    left: held.has("ArrowLeft"),
+    right: held.has("ArrowRight"),
+  };
+}
+
+function blocksPageScroll(code: string): boolean {
+  return code === "Space" || code.startsWith("Arrow");
+}
+
 /** Held keys live in a ref so the simulation can read them without rendering. */
 export function useKeyState(): RefObject<KeyState> {
   const state = useRef<KeyState>({ held: new Set(), pressed: new Set() });
@@ -25,8 +40,9 @@ export function useKeyState(): RefObject<KeyState> {
   useEffect(() => {
     const keys = state.current;
     const down = (event: KeyboardEvent) => {
-      if (event.repeat || isTyping(event.target)) return;
-      if (event.code === "Space") event.preventDefault();
+      if (isTyping(event.target)) return;
+      if (blocksPageScroll(event.code)) event.preventDefault();
+      if (event.repeat) return;
       keys.held.add(event.code);
       keys.pressed.add(event.code);
     };
