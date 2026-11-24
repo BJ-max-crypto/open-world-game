@@ -23,7 +23,7 @@ export default function SettingsPage() {
       <section className="nl-card">
         <p className="nl-kicker">Rig</p>
         <h1>Settings</h1>
-        <p className="nl-fine">These apply the next time you enter the city, and immediately if you change them from the pause menu.</p>
+        <p className="nl-fine">Stored on this device.</p>
         <SettingsFields settings={settings} onChange={update} />
         {saved ? <p className="nl-message">Saved on this device.</p> : null}
         <Link className="nl-button" href="/game">

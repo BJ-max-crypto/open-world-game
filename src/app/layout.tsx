@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Northline",
-  description: "A small open district. Walk, drive the harbor cab, and buy a room.",
+  description: "A third-person walk around a small test yard.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

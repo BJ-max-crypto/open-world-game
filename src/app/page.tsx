@@ -9,7 +9,7 @@ export default function HomePage() {
         <span>Harbor night</span>
       </header>
       <MainMenu />
-      <p className="nl-footer-note">WASD to walk · mouse to look · F for the cab · E at a door</p>
+      <p className="nl-footer-note">WASD to move · Shift to sprint · Space to jump · mouse to look</p>
       <div className="nl-skyline" aria-hidden>
         <i style={{ height: "42%" }} />
         <i style={{ height: "68%" }} />

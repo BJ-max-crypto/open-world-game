@@ -1,0 +1,49 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  cameraOffset,
+  dampAngle,
+  pullCameraIn,
+  stepVerticalVelocity,
+  wishDirection,
+  yawToward,
+} from "../src/game/player/movement.ts";
+
+test("forward at yaw 0 walks toward -Z and right is +X", () => {
+  const forward = wishDirection(0, { forward: true, back: false, left: false, right: false });
+  assert.ok(Math.abs(forward.x) < 1e-6);
+  assert.ok(forward.z < -0.99);
+  const right = wishDirection(0, { forward: false, back: false, left: false, right: true });
+  assert.ok(right.x > 0.99);
+  assert.ok(Math.abs(right.z) < 1e-6);
+});
+
+test("opposite keys cancel and diagonals stay unit length", () => {
+  const cancel = wishDirection(0.4, { forward: true, back: true, left: false, right: false });
+  assert.equal(cancel.x, 0);
+  assert.equal(cancel.z, 0);
+  const diagonal = wishDirection(0, { forward: true, back: false, left: false, right: true });
+  assert.ok(Math.abs(Math.hypot(diagonal.x, diagonal.z) - 1) < 1e-6);
+});
+
+test("jump only leaves the ground, and gravity pulls while airborne", () => {
+  assert.equal(stepVerticalVelocity(-2, true, false, -22, 0.016, 6), 0);
+  assert.equal(stepVerticalVelocity(0, true, true, -22, 0.016, 6), 6);
+  assert.ok(stepVerticalVelocity(6, false, true, -22, 0.1, 6) < 6);
+  assert.equal(stepVerticalVelocity(0, false, true, -22, 0.016, 6), -22 * 0.016);
+});
+
+test("the camera boom shortens at a hit and keeps a minimum distance", () => {
+  assert.equal(pullCameraIn(5.6, null, 0.28, 0.9), 5.6);
+  assert.ok(Math.abs(pullCameraIn(5.6, 2, 0.28, 0.9) - 1.72) < 1e-6);
+  assert.equal(pullCameraIn(5.6, 0.2, 0.28, 0.9), 0.9);
+});
+
+test("facing yaw points +Z along the wish and damping takes the short turn", () => {
+  assert.ok(Math.abs(yawToward(0, -1) - Math.PI) < 1e-6 || Math.abs(yawToward(0, -1) + Math.PI) < 1e-6);
+  const turned = dampAngle(0.1, Math.PI * 2 - 0.1, 100, 1);
+  assert.ok(turned < 0.1);
+  const offset = cameraOffset(0, 0, 4);
+  assert.ok(Math.abs(offset.x) < 1e-6);
+  assert.ok(offset.z > 3.9);
+});

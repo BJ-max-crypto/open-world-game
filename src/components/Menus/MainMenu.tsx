@@ -20,7 +20,7 @@ export function MainMenu() {
         still open.
       </h1>
       <p className="nl-lede">
-        Walk the blocks, take the harbor cab, and buy a room before the night gets expensive.
+        Walk a small test yard in third person. Click the street, then look with the mouse.
       </p>
       <div className="nl-hero-actions">
         <Link className="nl-button" href={callsign ? "/game" : "/login"}>
