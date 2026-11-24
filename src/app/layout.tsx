@@ -6,8 +6,8 @@ import "@fontsource/outfit/500.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Northline",
-  description: "A third-person walk around a small test yard.",
+  title: "The Coast",
+  description: "A waterfront district. Walk, take a delivery, and get paid.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

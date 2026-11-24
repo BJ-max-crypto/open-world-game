@@ -13,9 +13,11 @@ interface ThirdPersonPlayerProps {
   bodyRef: RefObject<RapierRigidBody | null>;
   look: RefObject<LookState | null>;
   keys: RefObject<KeyState | null>;
+  /** While a mission panel is open, gravity stays and walking stops. */
+  haltRef?: RefObject<boolean>;
 }
 
-export function ThirdPersonPlayer({ bodyRef, look, keys }: ThirdPersonPlayerProps) {
+export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef }: ThirdPersonPlayerProps) {
   const { world } = useRapier();
   const colliderRef = useRef<RapierCollider>(null);
   const visualRef = useRef<Group>(null);
@@ -47,17 +49,21 @@ export function ThirdPersonPlayer({ bodyRef, look, keys }: ThirdPersonPlayerProp
     if (!body || !collider || !controller || !keyState || !lookState) return;
 
     const dt = Math.min(delta, 1 / 30);
+    const halted = haltRef?.current === true;
     const held = keyState.held;
-    const wish = wishDirection(lookState.yaw, {
-      forward: held.has("KeyW"),
-      back: held.has("KeyS"),
-      left: held.has("KeyA"),
-      right: held.has("KeyD"),
-    });
+    const wish = halted
+      ? { x: 0, z: 0 }
+      : wishDirection(lookState.yaw, {
+          forward: held.has("KeyW"),
+          back: held.has("KeyS"),
+          left: held.has("KeyA"),
+          right: held.has("KeyD"),
+        });
     const moving = wish.x !== 0 || wish.z !== 0;
     const sprint = held.has("ShiftLeft") || held.has("ShiftRight");
     const speed = sprint && moving ? FOUNDATION.sprintSpeed : FOUNDATION.walkSpeed;
-    const jump = consumePressed(keyState, "Space");
+    const jumpPressed = consumePressed(keyState, "Space");
+    const jump = !halted && jumpPressed;
     let vertical = stepVerticalVelocity(vy.current, grounded.current, jump, FOUNDATION.gravity, dt, FOUNDATION.jumpVelocity);
 
     if (vertical > 0) controller.disableSnapToGround();
