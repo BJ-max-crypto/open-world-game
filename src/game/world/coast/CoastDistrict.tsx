@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CanvasTexture, DoubleSide, type Group } from "three";
+import { MarinaOfficeInterior } from "@/game/world/interiors/EnterableBuilding";
 import { SOLIDS, type Solid } from "@/game/world/coast/layout";
 
 interface CoastDistrictProps {
@@ -28,9 +29,12 @@ export function CoastDistrict({ collectedIds, waypoint }: CoastDistrictProps) {
       <Slab x={-28} z={-21.7} w={9} d={3.4} color="#8a6844" />
       <Roads />
       <Boats />
-      {SOLIDS.filter((solid) => solid.kind !== "crate" || !taken.has(solid.id)).map((solid) => (
-        <Block key={solid.id} solid={solid} />
-      ))}
+      {SOLIDS.filter((solid) => solid.id !== "marina-office" && (solid.kind !== "crate" || !taken.has(solid.id))).map(
+        (solid) => (
+          <Block key={solid.id} solid={solid} />
+        ),
+      )}
+      <MarinaOfficeInterior />
       <Signs />
       <WaypointMarker point={waypoint} />
     </group>

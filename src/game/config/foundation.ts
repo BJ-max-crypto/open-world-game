@@ -1,18 +1,19 @@
 /** Tunables for the Rapier third-person prototype. */
 export const FOUNDATION = {
-  walkSpeed: 4.6,
-  sprintSpeed: 8.2,
+  walkSpeed: 1.65,
+  sprintSpeed: 4.6,
   /** Meters per second squared while a direction is held. */
-  acceleration: 16,
+  acceleration: 6,
   /** Meters per second squared after the direction is released. */
-  deceleration: 28,
-  jumpVelocity: 6.4,
+  deceleration: 10,
+  jumpVelocity: 5.2,
   gravity: -22,
-  capsuleHalf: 0.46,
-  capsuleRadius: 0.32,
-  eye: 1.15,
-  spawn: [-6, 1.7, -19.6] as const,
-  cameraDistance: 5.6,
+  /** Capsule matches the 1.83 m humanoid: total height is 2 * (half + radius). */
+  capsuleHalf: 0.635,
+  capsuleRadius: 0.28,
+  eye: 0.55,
+  spawn: [-6, 0.96, -19.6] as const,
+  cameraDistance: 6.2,
   cameraMinDistance: 0.9,
   cameraPadding: 0.28,
   cameraSharpness: 12,

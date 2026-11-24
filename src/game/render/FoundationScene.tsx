@@ -11,6 +11,7 @@ import type { LookState } from "@/game/input/usePointerLock";
 import { ThirdPersonPlayer } from "@/game/player/ThirdPersonPlayer";
 import { CoastDirector } from "@/game/sim/CoastDirector";
 import type { CoastSession, SessionChange } from "@/game/session/CoastSession";
+import type { PlayerPose } from "@/game/player/pose";
 import { CoastDistrict } from "@/game/world/coast/CoastDistrict";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
@@ -26,6 +27,7 @@ interface FoundationSceneProps {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   sessionRef: RefObject<CoastSession | null>;
   haltRef: RefObject<boolean>;
+  pose: RefObject<PlayerPose>;
   collectedIds: readonly string[];
   waypoint: { x: number; z: number } | null;
   onReady: () => void;
@@ -38,6 +40,7 @@ export function FoundationScene({
   canvasRef,
   sessionRef,
   haltRef,
+  pose,
   collectedIds,
   waypoint,
   onReady,
@@ -60,7 +63,7 @@ export function FoundationScene({
       <fog attach="fog" args={["#d2b39a", 36, 130]} />
       <Suspense fallback={null}>
         <Sky sunPosition={[-55, 7, -28]} turbidity={8} rayleigh={1.8} mieCoefficient={0.006} mieDirectionalG={0.82} />
-        <Physics gravity={[0, FOUNDATION.gravity, 0]}>
+        <Physics gravity={[0, FOUNDATION.gravity, 0]} timeStep={1 / 60}>
           <MarkReady onReady={onReady} />
           <hemisphereLight args={["#f0c9a0", "#3a342c", 0.38]} />
           <ambientLight intensity={0.16} />
@@ -81,7 +84,7 @@ export function FoundationScene({
           />
           <directionalLight position={[18, 10, 24]} intensity={0.28} color="#9eb4c9" />
           <CoastDistrict collectedIds={collectedIds} waypoint={waypoint} />
-          <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} haltRef={haltRef} />
+          <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} haltRef={haltRef} pose={pose} />
           <ThirdPersonCamera bodyRef={bodyRef} look={look} />
           <CoastDirector bodyRef={bodyRef} keys={keys} sessionRef={sessionRef} onChange={onSession} />
         </Physics>

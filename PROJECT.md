@@ -19,13 +19,18 @@ Open the home page and choose Enter the coast. There is no sign-in.
 | Shift | Sprint |
 | Space | Jump |
 | E | Talk, accept, or pick up |
-| Esc | Release the mouse |
+| M | City map. Drag to pan, scroll to zoom. The world keeps running. |
+| Esc | Close the map, or release the mouse |
 
 Arrow keys and Space do not scroll the page while the game is open, unless focus is in a text field. Listeners are removed when the game unmounts.
 
 ## What is playable
 
-The route is `/game`. A kinematic Rapier character starts on the marina sidewalk with $250. Inez Calder offers one delivery. Three packages sit at Warehouse 3. Returning them pays $500 once. Cash and mission state stay in `localStorage` under `coast-save-v1:<id>`.
+The route is `/game`. A rigged humanoid walks the marina sidewalk with $250. The body is the CC0 Quaternius mannequin in `public/models/characters/player.glb`: full skeleton, idle, walk, sprint, jump, and land. It is not a clothed photoreal person. Swap that file to change the body. Inez Calder offers one delivery. Three packages sit at Warehouse 3. Returning them pays $500 once. Cash and mission state stay in `localStorage` under `coast-save-v1:<id>`.
+
+The Marina Office is hollow. The south door is an opening in the wall, so the player walks in and out. The desk and the back room have collision. Nothing teleports.
+
+The mini-map and the M map both draw `layout.ts`. North is inland. The world does not pause while the map is open. Walking keys are ignored until it closes, so the map does not steer the body.
 
 The district, defined in `src/game/world/coast/layout.ts`, has a coast road, an inland road, a cross street, sidewalks, a seawall, and these places: Marina Office, Salt, Harbor House, Market, Yard Shop, and Warehouse 3. Palms, lamps, parked cars, and the contact are solids in that same list. `CoastDistrict` draws them and gives each solid a cuboid collider.
 
