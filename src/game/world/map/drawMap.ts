@@ -26,6 +26,7 @@ export function drawDistrict(
   player: { x: number; z: number; yaw: number },
   waypoint: MapMarker | null,
   pin: MapMarker | null = null,
+  kayak: MapMarker | null = null,
 ): void {
   const { width, height } = view;
   ctx.clearRect(0, 0, width, height);
@@ -94,6 +95,19 @@ export function drawDistrict(
   if (contact) drawDiamond(ctx, worldToMap(contact.x, contact.z, view), "#9fd7c9");
   if (waypoint) drawDiamond(ctx, worldToMap(waypoint.x, waypoint.z, view), "#e7a25a");
   if (pin) drawDiamond(ctx, worldToMap(pin.x, pin.z, view), "#8eb6e0", 11);
+  if (kayak) {
+    const mark = worldToMap(kayak.x, kayak.z, view);
+    ctx.save();
+    ctx.translate(mark.px, mark.py);
+    ctx.fillStyle = "#e7f2f4";
+    ctx.strokeStyle = "#1c3c44";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 7, 2.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
   drawPlayer(ctx, worldToMap(player.x, player.z, view), player.yaw);
 }
 

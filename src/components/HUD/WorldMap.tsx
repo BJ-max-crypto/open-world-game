@@ -9,6 +9,7 @@ interface WorldMapProps {
   pose: RefObject<PlayerPose>;
   waypoint: { x: number; z: number } | null;
   pin: RefObject<{ x: number; z: number } | null>;
+  kayak: RefObject<{ x: number; z: number } | null>;
   onClose: () => void;
 }
 
@@ -16,7 +17,7 @@ interface WorldMapProps {
  * The world keeps simulating while this is open. Walking input is ignored so
  * map controls do not move the character. The marker still follows the body.
  */
-export function WorldMap({ pose, waypoint, pin, onClose }: WorldMapProps) {
+export function WorldMap({ pose, waypoint, pin, kayak, onClose }: WorldMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const view = useRef({ centerX: pose.current?.x ?? 0, centerZ: pose.current?.z ?? 0, span: 108 });
   const drag = useRef<{ x: number; y: number; cx: number; cz: number } | null>(null);
@@ -51,6 +52,7 @@ export function WorldMap({ pose, waypoint, pin, onClose }: WorldMapProps) {
         player,
         waypointRef.current,
         pin.current,
+        kayak.current,
       );
     };
     frame = requestAnimationFrame(draw);
