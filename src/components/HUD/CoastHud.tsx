@@ -4,7 +4,7 @@ import type { CoastSnapshot } from "@/game/session/CoastSession";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-export function CoastHud({ snap }: { snap: CoastSnapshot }) {
+export function CoastHud({ snap, kayakPrompt = null }: { snap: CoastSnapshot; kayakPrompt?: string | null }) {
   return (
     <div className="nl-hud">
       <header className="nl-hud-top">
@@ -28,7 +28,12 @@ export function CoastHud({ snap }: { snap: CoastSnapshot }) {
           {snap.notice}
         </p>
       ) : null}
-      {snap.prompt ? (
+      {kayakPrompt ? (
+        <p className="nl-coast-prompt">
+          <kbd>E</kbd>
+          {kayakPrompt}
+        </p>
+      ) : snap.prompt ? (
         <p className="nl-coast-prompt">
           <kbd>E</kbd>
           {snap.prompt.label}

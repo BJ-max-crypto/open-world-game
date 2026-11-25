@@ -6,7 +6,10 @@ import { useAnimations, useGLTF } from "@react-three/drei";
 import { CuboidCollider, RigidBody, type RapierRigidBody } from "@react-three/rapier";
 import { LoopOnce, LoopRepeat, type Group, type Mesh, type MeshStandardMaterial, type Object3D } from "three";
 import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
+import type { KeyState } from "@/game/input/useKeyState";
 import type { PlayerPose } from "@/game/player/pose";
+import { KayakRig } from "@/game/world/life/Kayak";
+import type { KayakSeat } from "@/game/world/life/kayak";
 import { PEOPLE, type PersonClip } from "@/game/world/life/people";
 import { LANES, lanePose } from "@/game/world/life/routes";
 import { createLife, stepLife, type CityLifeState, type VehicleKind } from "@/game/world/life/simulate";
@@ -15,9 +18,27 @@ const NEAR = 58;
 
 interface CityLifeProps {
   pose: RefObject<PlayerPose>;
+  keys: RefObject<KeyState | null>;
+  bodyRef: RefObject<RapierRigidBody | null>;
+  haltRef: RefObject<boolean>;
+  paddleRef: RefObject<boolean>;
+  seatRef: RefObject<KayakSeat | null>;
+  dismountRef: RefObject<{ x: number; y: number; z: number } | null>;
+  markRef: RefObject<{ x: number; z: number } | null>;
+  onKayakPrompt: (label: string | null) => void;
 }
 
-export function CityLife({ pose }: CityLifeProps) {
+export function CityLife({
+  pose,
+  keys,
+  bodyRef,
+  haltRef,
+  paddleRef,
+  seatRef,
+  dismountRef,
+  markRef,
+  onKayakPrompt,
+}: CityLifeProps) {
   const life = useRef<CityLifeState>(createLife());
   useFrame((_, delta) => {
     const focus = pose.current;
@@ -36,6 +57,18 @@ export function CityLife({ pose }: CityLifeProps) {
       {life.current.boats.map((boat) => (
         <Boat key={boat.id} index={boat.id} life={life} pose={pose} />
       ))}
+      <KayakRig
+        keys={keys}
+        pose={pose}
+        bodyRef={bodyRef}
+        haltRef={haltRef}
+        paddleRef={paddleRef}
+        seatRef={seatRef}
+        dismountRef={dismountRef}
+        markRef={markRef}
+        life={life}
+        onPrompt={onKayakPrompt}
+      />
     </group>
   );
 }

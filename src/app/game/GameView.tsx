@@ -9,6 +9,7 @@ import { WorldMap } from "@/components/HUD/WorldMap";
 import { useKeyState } from "@/game/input/useKeyState";
 import { usePointerLock } from "@/game/input/usePointerLock";
 import { createPose } from "@/game/player/pose";
+import type { KayakSeat } from "@/game/world/life/kayak";
 import { FoundationScene } from "@/game/render/FoundationScene";
 import { CoastSession, type CoastSnapshot, type SessionChange } from "@/game/session/CoastSession";
 import { readCoastSave, writeCoastSave } from "@/game/session/coastSave";
@@ -24,6 +25,11 @@ export function GameView() {
   const mapOpenRef = useRef(false);
   const pose = useRef(createPose());
   const pin = useRef<{ x: number; z: number } | null>(null);
+  const kayakMark = useRef<{ x: number; z: number } | null>(null);
+  const paddleRef = useRef(false);
+  const seatRef = useRef<KayakSeat | null>(null);
+  const dismountRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const [kayakPrompt, setKayakPrompt] = useState<string | null>(null);
   const sessionRef = useRef<CoastSession | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const profileId = useRef<string | null>(null);
@@ -134,6 +140,11 @@ export function GameView() {
         waypoint={snap.waypoint}
         onReady={markReady}
         onSession={onSession}
+        onKayakPrompt={setKayakPrompt}
+        paddleRef={paddleRef}
+        seatRef={seatRef}
+        dismountRef={dismountRef}
+        kayakMark={kayakMark}
       />
       {!ready ? <div className="nl-boot">Opening the waterfront…</div> : null}
       {ready && !locked && !snap.panel && !mapOpen ? (
@@ -142,10 +153,12 @@ export function GameView() {
           <span>Esc releases the mouse</span>
         </button>
       ) : null}
-      <CoastHud snap={snap} />
-      <MiniMap pose={pose} waypoint={snap.waypoint} pin={pin} />
+      <CoastHud snap={snap} kayakPrompt={kayakPrompt} />
+      <MiniMap pose={pose} waypoint={snap.waypoint} pin={pin} kayak={kayakMark} />
       <ControlGuide />
-      {mapOpen ? <WorldMap pose={pose} waypoint={snap.waypoint} pin={pin} onClose={() => setMap(false)} /> : null}
+      {mapOpen ? (
+        <WorldMap pose={pose} waypoint={snap.waypoint} pin={pin} kayak={kayakMark} onClose={() => setMap(false)} />
+      ) : null}
       {snap.panel ? (
         <MissionPanel panel={snap.panel} body={snap.panelBody} onAccept={accept} onDismiss={dismiss} />
       ) : null}

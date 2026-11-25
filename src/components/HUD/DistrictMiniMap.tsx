@@ -8,10 +8,11 @@ interface MiniMapProps {
   pose: RefObject<PlayerPose>;
   waypoint: { x: number; z: number } | null;
   pin: RefObject<{ x: number; z: number } | null>;
+  kayak: RefObject<{ x: number; z: number } | null>;
 }
 
 /** North-up map around the player. Drawn from the pose ref, not from React state. */
-export function MiniMap({ pose, waypoint, pin }: MiniMapProps) {
+export function MiniMap({ pose, waypoint, pin, kayak }: MiniMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const waypointRef = useRef(waypoint);
   waypointRef.current = waypoint;
@@ -31,6 +32,7 @@ export function MiniMap({ pose, waypoint, pin }: MiniMapProps) {
         player,
         waypointRef.current,
         pin.current,
+        kayak.current,
       );
     };
     frame = requestAnimationFrame(draw);

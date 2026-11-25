@@ -18,6 +18,7 @@ Drop a replacement GLB beside these and point `PEOPLE` in `src/game/world/life/p
 | `environment/palm.glb`, `bush.glb`, `tree.glb` | Low-poly plants | CC0 | Quaternius Ultimate Nature Pack, via the Quaternius showcase mirror |
 | `props/streetlight.glb`, `props/traffic-light.glb` | Low-poly street kit | CC0 | Quaternius Modular Streets Pack |
 | `vehicles/skiff.glb`, `sailboat.glb`, `ferry.glb` | Low-poly boats | CC0 | Quaternius Ships Pack |
+| `vehicles/kayak.glb` | A textured kayak hull, about 2 m in the file and scaled to about 4.3 m in the scene. The player boards it from the dock and paddles. It is not a scanned production boat. | Supplied for this project. No license text was in the file. | Project upload |
 
 Road cars are original meshes in `Traffic.tsx` (body, glass, wheels, lamps). They are not scanned vehicles. A licensed car GLB can replace `VehicleBody`.
 

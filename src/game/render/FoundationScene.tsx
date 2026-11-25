@@ -14,6 +14,7 @@ import type { CoastSession, SessionChange } from "@/game/session/CoastSession";
 import type { PlayerPose } from "@/game/player/pose";
 import { CoastDistrict } from "@/game/world/coast/CoastDistrict";
 import { CityLife } from "@/game/world/life/CityLife";
+import type { KayakSeat } from "@/game/world/life/kayak";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
   useEffect(() => {
@@ -33,6 +34,11 @@ interface FoundationSceneProps {
   waypoint: { x: number; z: number } | null;
   onReady: () => void;
   onSession: (kind: SessionChange) => void;
+  onKayakPrompt: (label: string | null) => void;
+  paddleRef: RefObject<boolean>;
+  seatRef: RefObject<KayakSeat | null>;
+  dismountRef: RefObject<{ x: number; y: number; z: number } | null>;
+  kayakMark: RefObject<{ x: number; z: number } | null>;
 }
 
 export function FoundationScene({
@@ -46,6 +52,11 @@ export function FoundationScene({
   waypoint,
   onReady,
   onSession,
+  onKayakPrompt,
+  paddleRef,
+  seatRef,
+  dismountRef,
+  kayakMark,
 }: FoundationSceneProps) {
   const bodyRef = useRef<RapierRigidBody>(null);
 
@@ -85,8 +96,27 @@ export function FoundationScene({
           />
           <directionalLight position={[18, 10, 24]} intensity={0.28} color="#9eb4c9" />
           <CoastDistrict collectedIds={collectedIds} waypoint={waypoint} />
-          <CityLife pose={pose} />
-          <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} haltRef={haltRef} pose={pose} />
+          <CityLife
+            pose={pose}
+            keys={keys}
+            bodyRef={bodyRef}
+            haltRef={haltRef}
+            paddleRef={paddleRef}
+            seatRef={seatRef}
+            dismountRef={dismountRef}
+            markRef={kayakMark}
+            onKayakPrompt={onKayakPrompt}
+          />
+          <ThirdPersonPlayer
+            bodyRef={bodyRef}
+            look={look}
+            keys={keys}
+            haltRef={haltRef}
+            paddleRef={paddleRef}
+            seatRef={seatRef}
+            dismountRef={dismountRef}
+            pose={pose}
+          />
           <ThirdPersonCamera bodyRef={bodyRef} look={look} />
           <CoastDirector bodyRef={bodyRef} keys={keys} sessionRef={sessionRef} onChange={onSession} />
         </Physics>

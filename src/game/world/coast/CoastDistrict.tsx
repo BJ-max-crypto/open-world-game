@@ -182,13 +182,31 @@ function Facade({ solid }: { solid: Solid }) {
 }
 
 function Seawall({ solid }: { solid: Solid }) {
+  const gap = 3.4;
+  const gapCenter = -18;
+  const leftEdge = -solid.w / 2;
+  const rightEdge = solid.w / 2;
+  const gapWest = gapCenter - gap / 2;
+  const gapEast = gapCenter + gap / 2;
+  const spans = [
+    { from: leftEdge, to: gapWest },
+    { from: gapEast, to: rightEdge },
+  ];
   return (
     <RigidBody type="fixed" position={[solid.x, 0, solid.z]} colliders={false} friction={1}>
-      <CuboidCollider args={[solid.w / 2, 1.2, solid.d / 2]} position={[0, 1.2, 0]} />
-      <mesh position={[0, 0.36, 0]} receiveShadow>
-        <boxGeometry args={[solid.w, 0.72, solid.d]} />
-        <meshStandardMaterial color={solid.color} roughness={0.92} />
-      </mesh>
+      {spans.map((span) => {
+        const width = span.to - span.from;
+        const center = (span.from + span.to) / 2;
+        return (
+          <group key={center} position={[center, 0, 0]}>
+            <CuboidCollider args={[width / 2, 1.2, solid.d / 2]} position={[0, 1.2, 0]} />
+            <mesh position={[0, 0.36, 0]} receiveShadow>
+              <boxGeometry args={[width, 0.72, solid.d]} />
+              <meshStandardMaterial color={solid.color} roughness={0.92} />
+            </mesh>
+          </group>
+        );
+      })}
     </RigidBody>
   );
 }

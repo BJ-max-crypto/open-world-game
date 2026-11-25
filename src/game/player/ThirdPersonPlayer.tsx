@@ -11,6 +11,7 @@ import type { MotionSample } from "@/game/player/locomotion";
 import { approachVelocity, dampAngle, wishDirection, stepVerticalVelocity, yawToward } from "@/game/player/movement";
 import { HumanAvatar } from "@/game/player/HumanAvatar";
 import type { PlayerPose } from "@/game/player/pose";
+import type { KayakSeat } from "@/game/world/life/kayak";
 
 interface ThirdPersonPlayerProps {
   bodyRef: RefObject<RapierRigidBody | null>;
@@ -18,12 +19,15 @@ interface ThirdPersonPlayerProps {
   keys: RefObject<KeyState | null>;
   /** While a mission panel or the map is open, gravity stays and walking stops. */
   haltRef?: RefObject<boolean>;
+  paddleRef?: RefObject<boolean>;
+  seatRef?: RefObject<KayakSeat | null>;
+  dismountRef?: RefObject<{ x: number; y: number; z: number } | null>;
   pose: RefObject<PlayerPose>;
 }
 
 const FIXED_STEP = 1 / 60;
 
-export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, pose }: ThirdPersonPlayerProps) {
+export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, seatRef, dismountRef, pose }: ThirdPersonPlayerProps) {
   const { world } = useRapier();
   const colliderRef = useRef<RapierCollider>(null);
   const visualRef = useRef<Group>(null);
@@ -76,6 +80,33 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, pose }: ThirdP
     const keyState = keys.current;
     const lookState = look.current;
     if (!body || !collider || !controller || !keyState || !lookState) return;
+
+    const spot = dismountRef?.current;
+    if (spot) {
+      dismountRef.current = null;
+      body.setTranslation(spot, true);
+      body.setNextKinematicTranslation(spot);
+      velocity.current = { x: 0, z: 0 };
+      vy.current = 0;
+      grounded.current = true;
+      motion.current = { speed: 0, vertical: 0, grounded: true, sprinting: false };
+      pose.current = { x: spot.x, z: spot.z, yaw: pose.current.yaw, speed: 0 };
+      return;
+    }
+    const seat = paddleRef?.current ? seatRef?.current : null;
+    if (seat) {
+      const at = { x: seat.x, y: seat.y, z: seat.z };
+      body.setTranslation(at, true);
+      body.setNextKinematicTranslation(at);
+      velocity.current = { x: 0, z: 0 };
+      vy.current = 0;
+      grounded.current = true;
+      const visual = visualRef.current;
+      if (visual) visual.rotation.y = seat.yaw;
+      motion.current = { speed: 0, vertical: 0, grounded: true, sprinting: false };
+      pose.current = { x: seat.x, z: seat.z, yaw: seat.yaw, speed: seat.speed };
+      return;
+    }
 
     const halted = haltRef?.current === true;
     const held = keyState.held;
