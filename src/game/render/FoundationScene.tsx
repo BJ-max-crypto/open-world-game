@@ -13,6 +13,7 @@ import { CoastDirector } from "@/game/sim/CoastDirector";
 import type { CoastSession, SessionChange } from "@/game/session/CoastSession";
 import type { PlayerPose } from "@/game/player/pose";
 import { CoastDistrict } from "@/game/world/coast/CoastDistrict";
+import { CityLife } from "@/game/world/life/CityLife";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
   useEffect(() => {
@@ -84,6 +85,7 @@ export function FoundationScene({
           />
           <directionalLight position={[18, 10, 24]} intensity={0.28} color="#9eb4c9" />
           <CoastDistrict collectedIds={collectedIds} waypoint={waypoint} />
+          <CityLife pose={pose} />
           <ThirdPersonPlayer bodyRef={bodyRef} look={look} keys={keys} haltRef={haltRef} pose={pose} />
           <ThirdPersonCamera bodyRef={bodyRef} look={look} />
           <CoastDirector bodyRef={bodyRef} keys={keys} sessionRef={sessionRef} onChange={onSession} />
