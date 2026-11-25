@@ -3,10 +3,12 @@
 import { useEffect, useRef, type PointerEvent, type RefObject } from "react";
 import type { PlayerPose } from "@/game/player/pose";
 import { drawDistrict } from "@/game/world/map/drawMap";
+import { mapToWorld } from "@/game/world/map/project";
 
 interface WorldMapProps {
   pose: RefObject<PlayerPose>;
   waypoint: { x: number; z: number } | null;
+  pin: RefObject<{ x: number; z: number } | null>;
   onClose: () => void;
 }
 
@@ -14,7 +16,7 @@ interface WorldMapProps {
  * The world keeps simulating while this is open. Walking input is ignored so
  * map controls do not move the character. The marker still follows the body.
  */
-export function WorldMap({ pose, waypoint, onClose }: WorldMapProps) {
+export function WorldMap({ pose, waypoint, pin, onClose }: WorldMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const view = useRef({ centerX: pose.current?.x ?? 0, centerZ: pose.current?.z ?? 0, span: 108 });
   const drag = useRef<{ x: number; y: number; cx: number; cz: number } | null>(null);
@@ -48,6 +50,7 @@ export function WorldMap({ pose, waypoint, onClose }: WorldMapProps) {
         },
         player,
         waypointRef.current,
+        pin.current,
       );
     };
     frame = requestAnimationFrame(draw);
@@ -84,8 +87,20 @@ export function WorldMap({ pose, waypoint, onClose }: WorldMapProps) {
     view.current.centerZ = start.cz + (event.clientY - start.y) * metersPerPixel;
   }
 
-  function onPointerUp() {
+  function onPointerUp(event: PointerEvent<HTMLCanvasElement>) {
+    const start = drag.current;
     drag.current = null;
+    const canvas = canvasRef.current;
+    if (!start || !canvas) return;
+    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5) return;
+    const rect = canvas.getBoundingClientRect();
+    pin.current = mapToWorld(event.clientX - rect.left, event.clientY - rect.top, {
+      width: rect.width,
+      height: rect.height,
+      centerX: view.current.centerX,
+      centerZ: view.current.centerZ,
+      span: view.current.span,
+    });
   }
 
   function onDoubleClick() {
@@ -113,12 +128,13 @@ export function WorldMap({ pose, waypoint, onClose }: WorldMapProps) {
         onPointerUp={onPointerUp}
         onDoubleClick={onDoubleClick}
       />
-      <p>Drag to pan. Scroll to zoom. Double-click to recenter. The city keeps moving. M or Esc closes this.</p>
+      <p>Drag to pan. Scroll to zoom. Click to drop a pin. Double-click to recenter. The city keeps moving. M or Esc closes this.</p>
       <ul>
         <li>You</li>
-        <li>Waypoint</li>
+        <li>Mission</li>
+        <li>Pin</li>
         <li>Inez</li>
-        <li>Marina Office, open door</li>
+        <li>Park, roads, and open marina door</li>
       </ul>
     </section>
   );

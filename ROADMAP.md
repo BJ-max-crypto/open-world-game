@@ -10,6 +10,7 @@ This is the order of work. One milestone lands at a time. A line is not done unt
 - A rigged humanoid with idle, walk, run, jump, and land clips. The shipped mesh is a CC0 mannequin, not a final clothed character.
 - A north-up mini-map and an M map that share the district layout. The world keeps running while the map is open.
 - The Marina Office can be walked into. One door, two rooms, furniture collision.
+- Sidewalk pedestrians, lane traffic with a seated driver, and boats on a wave shader. The people and boats are CC0 low-poly models. The cars are original meshes. Photoreal scans are still missing. See `public/models/ASSETS.md`.
 - One delivery mission, a $250 start, and a one-time $500 payout.
 - Local save for cash and that mission.
 - No sign-in on the way into the city.

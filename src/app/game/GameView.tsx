@@ -23,6 +23,7 @@ export function GameView() {
   const haltRef = useRef(false);
   const mapOpenRef = useRef(false);
   const pose = useRef(createPose());
+  const pin = useRef<{ x: number; z: number } | null>(null);
   const sessionRef = useRef<CoastSession | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const profileId = useRef<string | null>(null);
@@ -142,9 +143,9 @@ export function GameView() {
         </button>
       ) : null}
       <CoastHud snap={snap} />
-      <MiniMap pose={pose} waypoint={snap.waypoint} />
+      <MiniMap pose={pose} waypoint={snap.waypoint} pin={pin} />
       <ControlGuide />
-      {mapOpen ? <WorldMap pose={pose} waypoint={snap.waypoint} onClose={() => setMap(false)} /> : null}
+      {mapOpen ? <WorldMap pose={pose} waypoint={snap.waypoint} pin={pin} onClose={() => setMap(false)} /> : null}
       {snap.panel ? (
         <MissionPanel panel={snap.panel} body={snap.panelBody} onAccept={accept} onDismiss={dismiss} />
       ) : null}

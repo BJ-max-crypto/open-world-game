@@ -3,9 +3,14 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
-import { CanvasTexture, DoubleSide, type Group } from "three";
+import { useAnimations, useGLTF } from "@react-three/drei";
+import { CanvasTexture, DoubleSide, RepeatWrapping, type Group } from "three";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { MarinaOfficeInterior } from "@/game/world/interiors/EnterableBuilding";
 import { SOLIDS, type Solid } from "@/game/world/coast/layout";
+import { Ocean } from "@/game/world/life/Ocean";
+import { PEOPLE } from "@/game/world/life/people";
+import { BENCHES, PARK } from "@/game/world/life/routes";
 
 interface CoastDistrictProps {
   collectedIds: readonly string[];
@@ -22,13 +27,12 @@ export function CoastDistrict({ collectedIds, waypoint }: CoastDistrictProps) {
           <meshStandardMaterial color="#6e6a62" roughness={1} />
         </mesh>
       </RigidBody>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.12, -38]} receiveShadow>
-        <planeGeometry args={[160, 36]} />
-        <meshStandardMaterial color="#3c8f9c" roughness={0.28} metalness={0.06} />
-      </mesh>
+      <Ocean />
       <Slab x={-28} z={-21.7} w={9} d={3.4} color="#8a6844" />
       <Roads />
-      <Boats />
+      <ParkGreen />
+      <Benches />
+      <Signals />
       {SOLIDS.filter((solid) => solid.id !== "marina-office" && (solid.kind !== "crate" || !taken.has(solid.id))).map(
         (solid) => (
           <Block key={solid.id} solid={solid} />
@@ -80,29 +84,6 @@ function Slab({ x, z, w, d, color }: { x: number; z: number; w: number; d: numbe
   );
 }
 
-function Boats() {
-  return (
-    <group>
-      {[-32, -18, -6].map((x) => (
-        <group key={x} position={[x, 0.05, -29]}>
-          <mesh castShadow position={[0, 0.28, 0]}>
-            <boxGeometry args={[1.6, 0.42, 4.4]} />
-            <meshStandardMaterial color="#e6e0d4" roughness={0.62} />
-          </mesh>
-          <mesh position={[0, 0.62, -0.35]}>
-            <boxGeometry args={[1.15, 0.5, 1.5]} />
-            <meshStandardMaterial color="#3d4b58" roughness={0.5} />
-          </mesh>
-          <mesh position={[0, 1.35, 0.2]}>
-            <boxGeometry args={[0.08, 1.7, 0.08]} />
-            <meshStandardMaterial color="#efe7da" roughness={0.6} />
-          </mesh>
-        </group>
-      ))}
-    </group>
-  );
-}
-
 function Block({ solid }: { solid: Solid }) {
   if (solid.id === "seawall") return <Seawall solid={solid} />;
   if (solid.kind === "trunk") return <Palm solid={solid} />;
@@ -115,7 +96,22 @@ function Block({ solid }: { solid: Solid }) {
         <boxGeometry args={[solid.w, solid.h, solid.d]} />
         <meshStandardMaterial color={solid.color} roughness={solid.kind === "vehicle" ? 0.45 : 0.88} metalness={0.04} />
       </mesh>
-      {solid.kind === "vehicle" ? <Cabin solid={solid} /> : null}
+      {solid.kind === "vehicle" ? (
+        <>
+          <Cabin solid={solid} />
+          {[
+            [-solid.w * 0.42, solid.d * 0.32],
+            [solid.w * 0.42, solid.d * 0.32],
+            [-solid.w * 0.42, -solid.d * 0.32],
+            [solid.w * 0.42, -solid.d * 0.32],
+          ].map(([x, z]) => (
+            <mesh key={`${x}-${z}`} position={[x, -solid.h / 2 + 0.28, z]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.3, 0.3, 0.16, 10]} />
+              <meshStandardMaterial color="#1a1d20" roughness={0.65} />
+            </mesh>
+          ))}
+        </>
+      ) : null}
       {windows ? <Facade solid={solid} /> : null}
     </RigidBody>
   );
@@ -131,21 +127,38 @@ function Cabin({ solid }: { solid: Solid }) {
 }
 
 function Facade({ solid }: { solid: Solid }) {
-  const floors = Math.max(1, Math.round(solid.h / 3.4));
+  const floors = Math.max(1, Math.round(solid.h / 3.2));
   const bands = [];
   for (let floor = 0; floor < floors; floor += 1) {
-    const y = -solid.h / 2 + 1.5 + floor * 3.1;
-    if (y > solid.h / 2 - 0.5) break;
+    const y = -solid.h / 2 + 1.7 + floor * 3.05;
+    if (y > solid.h / 2 - 0.55) break;
     bands.push(y);
   }
+  const glass = windowTexture();
   return (
     <group>
-      {bands.map((y) => (
-        <mesh key={y} position={[0, y, solid.d / 2 - 0.05]}>
-          <boxGeometry args={[solid.w * 0.72, 0.7, 0.06]} />
-          <meshStandardMaterial color="#1b242c" roughness={0.22} metalness={0.35} />
-        </mesh>
+      {bands.map((y, floor) => (
+        <group key={y}>
+          <mesh position={[0, y, solid.d / 2 + 0.03]} castShadow>
+            <boxGeometry args={[solid.w * 0.76, 1.2, 0.08]} />
+            <meshStandardMaterial map={glass ?? undefined} color="#d5e0e6" roughness={0.16} metalness={0.45} />
+          </mesh>
+          {floor % 2 === 1 ? (
+            <mesh position={[0, y - 0.78, solid.d / 2 + 0.28]}>
+              <boxGeometry args={[solid.w * 0.5, 0.08, 0.46]} />
+              <meshStandardMaterial color={solid.accent ?? "#cfc6ba"} roughness={0.72} />
+            </mesh>
+          ) : null}
+        </group>
       ))}
+      <mesh position={[solid.w * 0.22, solid.h / 2 + 0.38, solid.d * 0.1]} castShadow>
+        <boxGeometry args={[Math.min(2.4, solid.w * 0.28), 0.7, Math.min(2.2, solid.d * 0.28)]} />
+        <meshStandardMaterial color="#8a847c" roughness={0.55} metalness={0.25} />
+      </mesh>
+      <mesh position={[0, -solid.h / 2 + 1.15, solid.d / 2 + 0.06]}>
+        <boxGeometry args={[solid.w * 0.62, 1.7, 0.08]} />
+        <meshStandardMaterial color="#efe7da" roughness={0.4} />
+      </mesh>
       {solid.accent ? (
         <mesh position={[0, solid.h / 2 - 0.18, 0]}>
           <boxGeometry args={[solid.w * 0.96, 0.28, solid.d * 0.96]} />
@@ -181,26 +194,23 @@ function Seawall({ solid }: { solid: Solid }) {
 }
 
 function Palm({ solid }: { solid: Solid }) {
+  const gltf = useGLTF("/models/environment/palm.glb");
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
   return (
     <group position={[solid.x, 0, solid.z]}>
       <RigidBody type="fixed" position={[0, solid.y, 0]} colliders="cuboid">
-        <mesh castShadow>
-          <cylinderGeometry args={[0.14, 0.22, solid.h, 6]} />
-          <meshStandardMaterial color={solid.color} roughness={0.92} />
+        <mesh visible={false}>
+          <boxGeometry args={[solid.w, solid.h, solid.d]} />
         </mesh>
       </RigidBody>
-      {[0, 1.2, 2.4, 3.6, 4.8].map((angle) => (
-        <mesh key={angle} position={[Math.cos(angle) * 0.7, solid.h + 0.15, Math.sin(angle) * 0.7]} rotation={[0.7, angle, 0]}>
-          <boxGeometry args={[0.18, 0.05, 1.5]} />
-          <meshStandardMaterial color="#617a56" roughness={0.85} />
-        </mesh>
-      ))}
+      <primitive object={scene} />
     </group>
   );
 }
 
 function Pole({ solid }: { solid: Solid }) {
-  const beacon = solid.id === "beacon";
+  if (solid.id !== "beacon") return <StreetLamp solid={solid} />;
+  const beacon = true;
   return (
     <RigidBody type="fixed" position={[solid.x, solid.y, solid.z]} colliders="cuboid">
       <mesh castShadow={beacon}>
@@ -215,24 +225,129 @@ function Pole({ solid }: { solid: Solid }) {
   );
 }
 
+function StreetLamp({ solid }: { solid: Solid }) {
+  const gltf = useGLTF("/models/props/streetlight.glb");
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
+  return (
+    <group position={[solid.x, 0, solid.z]}>
+      <RigidBody type="fixed" position={[0, solid.y, 0]} colliders="cuboid">
+        <mesh visible={false}>
+          <boxGeometry args={[solid.w, solid.h, solid.d]} />
+        </mesh>
+      </RigidBody>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
 function Contact({ solid }: { solid: Solid }) {
+  const gltf = useGLTF(PEOPLE[5]);
+  const scene = useMemo(() => cloneSkeleton(gltf.scene), [gltf.scene]);
+  const { actions } = useAnimations(gltf.animations, scene);
+  useEffect(() => {
+    actions.Idle?.reset().play();
+  }, [actions]);
   return (
     <RigidBody type="fixed" position={[solid.x, solid.y, solid.z]} colliders="cuboid" friction={0.8}>
-      <mesh castShadow position={[0, -0.15, 0]}>
-        <capsuleGeometry args={[0.22, 0.7, 4, 8]} />
-        <meshStandardMaterial color="#24343c" roughness={0.7} />
+      <mesh visible={false}>
+        <boxGeometry args={[0.5, solid.h, 0.5]} />
       </mesh>
-      <mesh castShadow position={[0, 0.55, 0]}>
-        <sphereGeometry args={[0.16, 10, 10]} />
-        <meshStandardMaterial color="#c4a484" roughness={0.65} />
-      </mesh>
-      <mesh position={[0, 0.05, 0.16]}>
-        <boxGeometry args={[0.28, 0.08, 0.04]} />
-        <meshStandardMaterial color="#efe7da" roughness={0.5} />
-      </mesh>
+      <group position={[0, -solid.y, 0]} scale={0.55}>
+        <primitive object={scene} />
+      </group>
     </RigidBody>
   );
 }
+
+function ParkGreen() {
+  const tree = useGLTF("/models/environment/tree.glb");
+  const bush = useGLTF("/models/environment/bush.glb");
+  const clones = useMemo(
+    () => [tree.scene.clone(true), tree.scene.clone(true), bush.scene.clone(true), bush.scene.clone(true)],
+    [bush.scene, tree.scene],
+  );
+  return (
+    <group position={[PARK.x, 0.03, PARK.z]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[PARK.w, PARK.d]} />
+        <meshStandardMaterial color="#6d7a62" roughness={0.96} />
+      </mesh>
+      <primitive object={clones[0]} position={[-3.2, 0, -1]} />
+      <primitive object={clones[1]} position={[3.4, 0, 1.2]} />
+      <primitive object={clones[2]} position={[-1, 0, 2]} />
+      <primitive object={clones[3]} position={[1.5, 0, -2]} />
+    </group>
+  );
+}
+
+function Benches() {
+  return (
+    <group>
+      {BENCHES.map((bench) => (
+        <group key={`${bench.x}`} position={[bench.x, 0.28, bench.z]}>
+          <mesh castShadow>
+            <boxGeometry args={[1.4, 0.08, 0.42]} />
+            <meshStandardMaterial color="#8a6844" roughness={0.7} />
+          </mesh>
+          <mesh position={[0, 0.28, -0.16]}>
+            <boxGeometry args={[1.4, 0.42, 0.08]} />
+            <meshStandardMaterial color="#8a6844" roughness={0.7} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function Signals() {
+  const gltf = useGLTF("/models/props/traffic-light.glb");
+  const spots: Array<[number, number]> = [
+    [-4.4, -9.4],
+    [4.4, -15.5],
+    [-4.4, 12.4],
+    [4.4, 18.3],
+  ];
+  const models = useMemo(() => spots.map(() => gltf.scene.clone(true)), [gltf.scene]);
+  return (
+    <group>
+      {spots.map(([x, z], index) => (
+        <primitive key={`${x}-${z}`} object={models[index]} position={[x, 0, z]} />
+      ))}
+    </group>
+  );
+}
+
+function windowTexture(): CanvasTexture | null {
+  if (sharedWindows) return sharedWindows;
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const context = canvas.getContext("2d");
+  if (context) {
+    context.fillStyle = "#16303a";
+    context.fillRect(0, 0, 128, 128);
+    context.fillStyle = "#c5d5de";
+    for (let y = 10; y < 128; y += 32) {
+      for (let x = 10; x < 128; x += 30) context.fillRect(x, y, 16, 18);
+    }
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(2, 1);
+  sharedWindows = texture;
+  return texture;
+}
+
+let sharedWindows: CanvasTexture | null = null;
+
+useGLTF.preload("/models/environment/palm.glb");
+useGLTF.preload("/models/environment/tree.glb");
+useGLTF.preload("/models/environment/bush.glb");
+useGLTF.preload("/models/props/streetlight.glb");
+useGLTF.preload("/models/props/traffic-light.glb");
+useGLTF.preload(PEOPLE[5]);
 
 function Signs() {
   return (

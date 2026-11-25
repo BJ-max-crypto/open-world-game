@@ -7,10 +7,11 @@ import { drawDistrict } from "@/game/world/map/drawMap";
 interface MiniMapProps {
   pose: RefObject<PlayerPose>;
   waypoint: { x: number; z: number } | null;
+  pin: RefObject<{ x: number; z: number } | null>;
 }
 
 /** North-up map around the player. Drawn from the pose ref, not from React state. */
-export function MiniMap({ pose, waypoint }: MiniMapProps) {
+export function MiniMap({ pose, waypoint, pin }: MiniMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const waypointRef = useRef(waypoint);
   waypointRef.current = waypoint;
@@ -29,6 +30,7 @@ export function MiniMap({ pose, waypoint }: MiniMapProps) {
         { width: canvas.width, height: canvas.height, centerX: player.x, centerZ: player.z, span: 46 },
         player,
         waypointRef.current,
+        pin.current,
       );
     };
     frame = requestAnimationFrame(draw);
