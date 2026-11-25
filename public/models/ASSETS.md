@@ -19,7 +19,7 @@ Drop a replacement GLB beside these and point `PEOPLE` in `src/game/world/life/p
 | `props/streetlight.glb`, `props/traffic-light.glb` | Low-poly street kit | CC0 | Quaternius Modular Streets Pack |
 | `vehicles/skiff.glb`, `sailboat.glb`, `ferry.glb` | Low-poly boats | CC0 | Quaternius Ships Pack |
 
-Road cars are original meshes in `Traffic.tsx` (body, glass, wheels, lamps). They are not scanned vehicles. A licensed car GLB can replace `VehicleBody`.
+Road cars are original meshes in `src/game/world/life/CityLife.tsx` (`VehicleBody`: body, glass, wheels, lamps). They are not scanned vehicles. A licensed car GLB can replace `VehicleBody`. The requirements for that file are in `ASSET_REQUIREMENTS.md`.
 
 ## Still needed for a photoreal city
 

@@ -1,6 +1,6 @@
 # THE COAST — roadmap
 
-This is the order of work. One milestone lands at a time. A line is not done until it has been typechecked, built, and played.
+The order of work is `DEVELOPMENT_ROADMAP.md`. This file only records what is already playable. A line is not done until it has been typechecked, built, and played. The next code change waits for approval of milestone 1 in that plan: street materials and lighting. Do not add more crowd members, box buildings, or box cars while that decision is open.
 
 ## Already in the playable build
 
@@ -15,28 +15,6 @@ This is the order of work. One milestone lands at a time. A line is not done unt
 - Local save for cash and that mission.
 - No sign-in on the way into the city.
 
-## Next milestones
+## Waiting on approval
 
-1. **Arrow-key controller.** Done in this pass. Arrow keys walk relative to the camera. Shift, Space, E, mouse, and Escape stay. WASD no longer walks. Arrow keys do not scroll the page. Speed eases in and out.
-
-2. **A believable first district.** The marina block exists as a blockout. Next is architecture, windows, entrances, road markings, sidewalks, and street furniture that read as a place. Keep the footprints in `layout.ts` so collision does not drift from the art. Do not grow the map yet.
-
-3. **A character and environmental models.** Replace the capsule and the box buildings with original glTF from Blender. Colliders stay on the layout footprints.
-
-4. **People and usable objects.** Inez can already be talked to. Add a few pedestrians with simple movement, and more than one kind of interaction, without simulating a whole day.
-
-5. **Mission structure.** Generalize past the single delivery: objectives, rewards, progress, and more than one available job. Keep the rule that a payout happens once.
-
-6. **Transactions.** Extend the ledger past cash-for-a-mission: type, description, time, and a refusal for invalid amounts. Still no bank until a later step needs one. The session remains the only writer.
-
-7. **One vehicle.** Enter, drive, brake, steer, reverse, and exit a single original car. Physics should feel heavy. Ownership and a garage come after it is fun to drive.
-
-8. **A business and a property.** One business with real costs and one property with a price and an owner. No collect button that skips the management.
-
-9. **More ways to spend an hour.** A second kind of work that is not a delivery, plus light traffic. Leave weather, a full clock, and a phone until this is fun.
-
-10. **A larger city and optional accounts.** New districts only after the first one holds up. Accounts and cloud saves stay off the play path until the single-player loop is stable. No multiplayer.
-
-## Explicitly later
-
-Day and night, weather, a mini-map, a phone, inventory, a bank balance, vehicle shops, employee wages, and highways. They are part of the design and not part of the current milestone.
+Milestone 1 is street materials and an environment map, on the current slabs. Milestone 2 is one building. Milestone 3 is one human replacing the mannequin. Businesses, property, a drivable car, crime, police, and flight come after the street holds up, each with its own approval. See `DEVELOPMENT_ROADMAP.md`.

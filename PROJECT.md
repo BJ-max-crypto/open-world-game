@@ -1,6 +1,8 @@
 # THE COAST
 
-THE COAST is a browser third-person game. The playable build is one original waterfront district: walk it, take a delivery, and get paid. The city is still a designed blockout, not a finished metropolis. Meshes and colliders share one layout so Blender models can replace the blockout without moving gameplay.
+THE COAST is a browser third-person game. The playable build is one original waterfront district: walk it, take a delivery, and get paid. The city on screen is a designed blockout with a temporary crowd, box cars, and a wave shader. It is not a finished metropolis, and it is not photorealistic. Meshes and colliders share one layout so a real model can replace a blockout without moving gameplay.
+
+The production plan is `DEVELOPMENT_ROADMAP.md`. The visual bar is `QUALITY_STANDARDS.md`. The missing models are `ASSET_REQUIREMENTS.md`. No further blockout geometry is in scope until that plan is approved.
 
 ## Run
 
@@ -63,4 +65,14 @@ Money changes only inside `CoastSession`. The HUD displays the snapshot. The del
 
 ## Assets
 
-`public/` is ready for models, textures, and audio. Until a model exists, a solid in `layout.ts` is both the visible box and the collider. Replace the mesh later and keep the footprint.
+`public/models/ASSETS.md` lists every GLB and its license. `public/` has no image textures yet. Until a model exists, a solid in `layout.ts` is both the visible box and the collider. Replace the mesh later and keep the footprint.
+
+## Documents
+
+| File | What it decides |
+| --- | --- |
+| `GAME_DESIGN.md` | The fantasy and the current rules of play |
+| `QUALITY_STANDARDS.md` | When a screenshot is good enough to keep |
+| `ASSET_REQUIREMENTS.md` | Which models are missing, and the export contract |
+| `DEVELOPMENT_ROADMAP.md` | The order of work, and what waits for approval |
+| `ROADMAP.md` | Pointer at the production plan, plus what is already playable |

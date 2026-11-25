@@ -30,7 +30,7 @@ One connected map, built district by district:
 
 The current block is the marina and the first warehouse street. It is the seed, not the map. Buildings should end up with real proportions, windows, doors, and materials. Roads need markings, lights, sidewalks, and street furniture. The blockout may stay until a model is ready. New work should not add meaningless cubes that are not a place.
 
-Later, the city needs pedestrians, traffic, a day and night cycle, weather, and ambient sound. Those are not in the playable build.
+The playable block now has a temporary sidewalk crowd, lane traffic, and boats on a wave shader. They prove the routes and the map. They do not meet the visual bar in `QUALITY_STANDARDS.md`. A day and night cycle, weather, and ambient sound are still absent. The order for replacing the picture is `DEVELOPMENT_ROADMAP.md`.
 
 ## Money
 
@@ -58,11 +58,17 @@ Today there is one mission, A First Opportunity. Its states are available, activ
 
 ## People and traffic
 
-Inez is a stationary contact. Parked cars do not drive. There are no pedestrians. The next simulation step is a few people and cars that move believably and stay cheap to simulate, not a full schedule system.
+Inez stands at the marina and plays an idle clip. Eight stylized characters walk the sidewalks, wait at the lights, talk, and step into a doorway. Six cars follow lanes with a seated driver and stop for the crossing phase. Three boats move offshore. The player cannot enter a car. Pedestrians have no physics body. Parked cars in the layout do not pull out.
+
+That simulation stays. The meshes are temporary and are listed in `ASSET_REQUIREMENTS.md`. Schedules, shopping, phone calls, dogs, and vehicle entry are later states on the same path follower, after a human cast exists.
+
+## Long-term freedom
+
+The city is meant to become a sandbox: businesses with costs and staff, property with rent, owned cars and boats, jobs that are not all deliveries, fictional crime and police, and eventually flight. None of that is playable. Each one needs its own design note and an approved milestone. The first work is the street, one building, and one person, because a sandbox of boxes would not be the game.
 
 ## Presentation
 
-The on-screen layer should feel like a game: cash, the current job, the objective, an interaction prompt, a mini-map, and later a phone, a pause menu, a transaction list, and ownership screens. The current HUD has cash, the mission, the objective, the package count, a notice, the E prompt, and a north-up mini-map. M opens the same map larger. The world keeps simulating. Walking keys are ignored until the map closes.
+The on-screen layer should feel like a game: cash, the current job, the objective, an interaction prompt, a mini-map, and later a phone, a pause menu, a transaction list, and ownership screens. The current HUD has cash, the mission, the objective, the package count, a notice, the E prompt, and a north-up mini-map. M opens the same map larger, with zoom, pan, and a pin. The world keeps simulating. Walking keys are ignored until the map closes.
 
 ## Controls
 
