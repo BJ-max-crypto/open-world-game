@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect, useRef, type RefObject } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Sky } from "@react-three/drei";
-import { Physics, type RapierRigidBody } from "@react-three/rapier";
+import { Environment, Sky } from "@react-three/drei";
+import { CuboidCollider, Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
 import { ThirdPersonCamera } from "@/game/camera/ThirdPersonCamera";
 import { FOUNDATION } from "@/game/config/foundation";
 import type { KeyState } from "@/game/input/useKeyState";
@@ -75,6 +75,7 @@ export function FoundationScene({
       <fog attach="fog" args={["#d2b39a", 36, 130]} />
       <Suspense fallback={null}>
         <Sky sunPosition={[-55, 7, -28]} turbidity={8} rayleigh={1.8} mieCoefficient={0.006} mieDirectionalG={0.82} />
+        <Environment files="/textures/sky/kloppenheim_1k.hdr" background={false} environmentIntensity={0.5} />
         <Physics gravity={[0, FOUNDATION.gravity, 0]} timeStep={1 / 60}>
           <MarkReady onReady={onReady} />
           <hemisphereLight args={["#f0c9a0", "#3a342c", 0.38]} />
@@ -95,6 +96,10 @@ export function FoundationScene({
             shadow-normalBias={0.04}
           />
           <directionalLight position={[18, 10, 24]} intensity={0.28} color="#9eb4c9" />
+          {/* Ground lives here so a late texture suspend cannot spawn it under a falling player. */}
+          <RigidBody type="fixed" position={[0, -0.5, 8]} colliders={false} friction={1}>
+            <CuboidCollider args={[50, 0.5, 32]} />
+          </RigidBody>
           <CoastDistrict collectedIds={collectedIds} waypoint={waypoint} />
           <CityLife
             pose={pose}

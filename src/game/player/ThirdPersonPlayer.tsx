@@ -61,11 +61,12 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
     const lookState = look.current;
     if (!body || !collider || !controller || !keyState || !lookState) return;
 
-    accumulator.current = Math.min(accumulator.current + delta, 0.1);
+    // Catch up after a hitch. Sixty frames a second still takes a single step.
+    accumulator.current = Math.min(accumulator.current + delta, 0.25);
     const jumpPressed = consumePressed(keyState, "Space");
     let jumpLeft = jumpPressed;
     let steps = 0;
-    while (accumulator.current >= FIXED_STEP && steps < 4) {
+    while (accumulator.current >= FIXED_STEP && steps < 12) {
       accumulator.current -= FIXED_STEP;
       integrate(FIXED_STEP, jumpLeft);
       jumpLeft = false;

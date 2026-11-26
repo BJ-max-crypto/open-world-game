@@ -34,6 +34,8 @@ The mini-map and the M map both draw `layout.ts` plus the sidewalks, park, and s
 
 People on the sidewalks, cars on the lanes, and boats on the harbor share that same coordinate set. A wooden kayak is moored at the dock west of the spawn. Walk to its side and press E to board. Arrows paddle and turn. E steps back onto the dock when the hull is alongside it. The hull cannot cross the seawall. The crowd is eight clothed CC0 characters with idle, walk, and run clips. They are stylized, not photoreal scans. Cars are original meshes with a seated driver. The water is a wave shader, not a flat color. See `public/models/ASSETS.md` for what is still missing.
 
+Roads, sidewalks, and the open ground use CC0 asphalt and concrete textures. A sky HDRI supplies reflections. Buildings are still the blockout. An Unreal 5.8 move is written down in `docs/UNREAL_58.md` and is not running. Blender export rules are in `docs/BLENDER_EXPORT.md`.
+
 The district, defined in `src/game/world/coast/layout.ts`, has a coast road, an inland road, a cross street, sidewalks, a seawall, and these places: Marina Office, Salt, Harbor House, Market, Yard Shop, and Warehouse 3. Palms, lamps, parked cars, and the contact are solids in that same list. `CoastDistrict` draws them and gives each solid a cuboid collider.
 
 ## How the live game is split

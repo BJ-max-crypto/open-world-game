@@ -20,7 +20,17 @@ Drop a replacement GLB beside these and point `PEOPLE` in `src/game/world/life/p
 | `vehicles/skiff.glb`, `sailboat.glb`, `ferry.glb` | Low-poly boats | CC0 | Quaternius Ships Pack |
 | `vehicles/kayak.glb` | A textured kayak hull, about 2 m in the file and scaled to about 4.3 m in the scene. The player boards it from the dock and paddles. It is not a scanned production boat. | Supplied for this project. No license text was in the file. | Project upload |
 
-Road cars are original meshes in `Traffic.tsx` (body, glass, wheels, lamps). They are not scanned vehicles. A licensed car GLB can replace `VehicleBody`.
+Road cars are original meshes in `src/game/world/life/CityLife.tsx` (`VehicleBody`: body, glass, wheels, lamps). They are not scanned vehicles. A licensed car GLB can replace `VehicleBody`.
+
+## Surfaces
+
+| File | What it is | License | Source |
+| --- | --- | --- | --- |
+| `public/textures/asphalt/*` | Asphalt color, OpenGL normal, roughness, 1K | CC0 | Poly Haven `asphalt_02` |
+| `public/textures/concrete/*` | Concrete color, OpenGL normal, roughness, 1K | CC0 | Poly Haven `concrete_floor_02` |
+| `public/textures/sky/kloppenheim_1k.hdr` | Sky-only HDRI used for reflections | CC0 | Poly Haven `kloppenheim_06_puresky` |
+
+These tile the roads, sidewalks, and open ground. Buildings are still the blockout.
 
 ## Still needed for a photoreal city
 
