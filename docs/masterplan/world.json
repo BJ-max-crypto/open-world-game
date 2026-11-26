@@ -1,0 +1,235 @@
+{
+  "name": "The Coast",
+  "units": "meters",
+  "axes": { "north": "+Z", "east": "+X", "up": "+Y" },
+  "bounds": { "x0": -3200, "x1": 3200, "z0": -2600, "z1": 2600 },
+  "prototypeAnchor": {
+    "worldX": 640,
+    "worldZ": 620,
+    "yaw": 0,
+    "note": "world = local + anchor. The playable shore stays on local -Z, which is world south, into the yacht basin. The Atlantic is east of the barrier island."
+  },
+  "water": {
+    "atlantic": { "x0": 1000, "x1": 3200, "z0": -2600, "z1": 2600 },
+    "bay": [
+      [260, 1720],
+      [420, 1480],
+      [240, 1120],
+      [320, 760],
+      [520, 660],
+      [520, 596],
+      [1080, 596],
+      [1140, 220],
+      [760, 40],
+      [340, -180],
+      [120, -640],
+      [240, -1180],
+      [520, -1480],
+      [1120, -1320],
+      [1280, -520],
+      [1160, 240],
+      [1100, 860],
+      [1260, 1420],
+      [1180, 1760],
+      [260, 1720]
+    ],
+    "northInlet": [
+      [480, 2080],
+      [1960, 2140],
+      [1880, 1760],
+      [420, 1720]
+    ],
+    "portChannel": [
+      [-240, -1580],
+      [3200, -1500],
+      [3200, -1980],
+      [-280, -2060]
+    ],
+    "canals": [
+      { "id": "azure-north", "x0": -3000, "x1": -1100, "z": -1280, "width": 42 },
+      { "id": "azure-mid", "x0": -2800, "x1": -1100, "z": -1680, "width": 48 },
+      { "id": "azure-port", "x0": -2600, "x1": -360, "z": -2080, "width": 54 },
+      { "id": "azure-south", "x0": -2400, "x1": -1100, "z": -2420, "width": 36 },
+      { "id": "azure-collector", "z0": -2500, "z1": -1100, "x": -1480, "width": 40 }
+    ]
+  },
+  "islands": {
+    "barrier": [
+      [1380, 1660],
+      [1240, 1180],
+      [1160, 620],
+      [1220, 40],
+      [1140, -680],
+      [1280, -1380],
+      [1520, -1540],
+      [1960, -1420],
+      [2080, -640],
+      [1980, 180],
+      [1860, 780],
+      [2020, 1460],
+      [1680, 1700],
+      [1380, 1660]
+    ],
+    "northCay": [
+      [1320, 2140],
+      [1620, 2320],
+      [1960, 2260],
+      [1880, 2040],
+      [1500, 1980],
+      [1320, 2140]
+    ]
+  },
+  "districts": [
+    {
+      "id": "downtown",
+      "name": "Downtown",
+      "x0": -1100,
+      "x1": 360,
+      "z0": 520,
+      "z1": 1680,
+      "identity": "Tight commercial grid, glass podiums, the tallest towers.",
+      "coverage": 0.42,
+      "typicalHeight": [40, 140],
+      "peakHeight": 276,
+      "label": [-360, 1180]
+    },
+    {
+      "id": "brickell",
+      "name": "Brickell Heights",
+      "x0": -1100,
+      "x1": 500,
+      "z0": -1100,
+      "z1": 520,
+      "identity": "Spaced residential towers with curved balconies and blue-green glass.",
+      "coverage": 0.28,
+      "typicalHeight": [36, 110],
+      "peakHeight": 168,
+      "label": [-520, -200]
+    },
+    {
+      "id": "palm",
+      "name": "Palm Grove",
+      "x0": -3200,
+      "x1": -1100,
+      "z0": 400,
+      "z1": 2600,
+      "identity": "One- and two-story houses, canopy streets, lawns.",
+      "coverage": 0.22,
+      "typicalHeight": [6, 9],
+      "peakHeight": 12,
+      "label": [-2300, 1600]
+    },
+    {
+      "id": "azure",
+      "name": "Azure Shores",
+      "x0": -3200,
+      "x1": -1100,
+      "z0": -2600,
+      "z1": 400,
+      "identity": "Canal houses, private docks, a few low condo clusters at the locks.",
+      "coverage": 0.18,
+      "typicalHeight": [7, 12],
+      "peakHeight": 48,
+      "label": [-2300, -900]
+    },
+    {
+      "id": "ocean",
+      "name": "Oceanfront",
+      "x0": 1500,
+      "x1": 2300,
+      "z0": -1550,
+      "z1": 1680,
+      "identity": "Public beach, dune, hotels set back, coral-stucco shops with awnings.",
+      "coverage": 0.2,
+      "typicalHeight": [10, 48],
+      "peakHeight": 72,
+      "label": [1780, 900]
+    },
+    {
+      "id": "marina",
+      "name": "Marina District",
+      "x0": 500,
+      "x1": 1500,
+      "z0": 400,
+      "z1": 1100,
+      "identity": "Yacht basin, piers, low waterfront rooms. Holds the playable marina.",
+      "coverage": 0.2,
+      "typicalHeight": [8, 18],
+      "peakHeight": 32,
+      "label": [980, 860]
+    },
+    {
+      "id": "port",
+      "name": "Portside",
+      "x0": -1100,
+      "x1": 900,
+      "z0": -2600,
+      "z1": -1100,
+      "identity": "Sheds, container yards, cranes, one control tower. Large footprints.",
+      "coverage": 0.35,
+      "typicalHeight": [10, 18],
+      "peakHeight": 55,
+      "label": [-400, -2100]
+    },
+    {
+      "id": "bayview",
+      "name": "Bayview Parklands",
+      "x0": -1100,
+      "x1": 2100,
+      "z0": 1680,
+      "z1": 2600,
+      "identity": "Lawns, mangroves, boardwalks, one amphitheater. Almost no buildings.",
+      "coverage": 0.02,
+      "typicalHeight": [0, 6],
+      "peakHeight": 12,
+      "label": [200, 2200]
+    }
+  ],
+  "roads": [
+    { "id": "coast-highway", "name": "Coast Highway", "class": "freeway", "width": 36, "points": [[-1750, -2600], [-1750, 2600]] },
+    { "id": "port-expressway", "name": "Port Expressway", "class": "freeway", "width": 32, "points": [[-3200, -1850], [200, -1850]] },
+    { "id": "palm-avenue", "name": "Palm Avenue", "class": "boulevard", "width": 24, "points": [[-2300, -2500], [-2300, 2550]] },
+    { "id": "meridian", "name": "Meridian Boulevard", "class": "boulevard", "width": 24, "points": [[-520, -1100], [-520, 1650]] },
+    { "id": "grove-connector", "name": "Grove Connector", "class": "boulevard", "width": 22, "points": [[-1750, 1100], [-200, 1100]] },
+    {
+      "id": "waterfront",
+      "name": "Waterfront Boulevard",
+      "class": "boulevard",
+      "width": 22,
+      "points": [[-200, 1900], [-40, 1500], [-120, 1100], [40, 780], [240, 640], [620, 620]]
+    },
+    { "id": "central-causeway", "name": "Central Causeway", "class": "bridge", "width": 18, "points": [[240, 480], [1680, 480], [1960, 480]] },
+    { "id": "brickell-bridge", "name": "Brickell Bridge", "class": "bridge", "width": 18, "points": [[200, -240], [1500, -240], [1860, -240]] },
+    { "id": "north-causeway", "name": "North Causeway", "class": "bridge", "width": 16, "points": [[200, 1980], [2100, 1980]] },
+    {
+      "id": "lantern-road",
+      "name": "Lantern Road",
+      "class": "beach",
+      "width": 16,
+      "points": [[1860, 1620], [1760, 900], [1840, 200], [1740, -700], [1860, -1420]]
+    },
+    { "id": "harbor-avenue", "name": "Harbor Avenue", "class": "street", "width": 12, "points": [[480, 660], [1040, 660], [1100, 280], [460, 260], [480, 660]] },
+    { "id": "canal-drive", "name": "Canal Drive", "class": "residential", "width": 10, "points": [[-3100, -1500], [-1200, -1500]] }
+  ],
+  "grids": [
+    { "id": "downtown-streets", "class": "street", "width": 12, "x0": -980, "x1": 240, "z0": 600, "z1": 1600, "spacing": 90 },
+    { "id": "downtown-alleys", "class": "alley", "width": 6, "x0": -940, "x1": 200, "z0": 640, "z1": 1560, "spacing": 90 },
+    { "id": "palm-collectors", "class": "residential", "width": 10, "verticalX": [-2900, -1450], "horizontalZ": [800, 1500, 2100, 2480], "x0": -3100, "x1": -1200, "z0": 500, "z1": 2520 },
+    { "id": "azure-streets", "class": "residential", "width": 10, "verticalX": [-2700, -1900], "horizontalZ": [-1000, -1900, -2300], "x0": -3100, "x1": -1200, "z0": -2500, "z1": 200 },
+    { "id": "port-service", "class": "service", "width": 8, "verticalX": [-780, -160], "horizontalZ": [-1500, -2250], "x0": -1000, "x1": 400, "z0": -2500, "z1": -1200 }
+  ],
+  "landmarks": [
+    { "id": "helion", "name": "Helion Tower", "district": "downtown", "x": -240, "z": 1080, "height": 276, "kind": "tower" },
+    { "id": "civic", "name": "Civic Hall", "district": "downtown", "x": 40, "z": 1460, "height": 42, "kind": "civic" },
+    { "id": "meridian-residences", "name": "The Meridian", "district": "brickell", "x": -180, "z": -80, "height": 168, "kind": "tower" },
+    { "id": "grove-market", "name": "Grove Market", "district": "palm", "x": -2300, "z": 1560, "height": 10, "kind": "civic" },
+    { "id": "azure-lock", "name": "Azure Lock", "district": "azure", "x": -1480, "z": -1280, "height": 8, "kind": "bridge" },
+    { "id": "lantern-hotel", "name": "Lantern Hotel", "district": "ocean", "x": 1680, "z": 460, "height": 64, "kind": "hotel" },
+    { "id": "east-pier", "name": "East Pier", "district": "ocean", "x": 2140, "z": 180, "height": 4, "kind": "pier" },
+    { "id": "marina-office", "name": "Marina Office", "district": "marina", "x": 612, "z": 620.5, "height": 5.4, "kind": "existing" },
+    { "id": "harbor-light", "name": "Harbor Light", "district": "marina", "x": 1040, "z": 560, "height": 22, "kind": "light" },
+    { "id": "port-beacon", "name": "Port Beacon", "district": "port", "x": -700, "z": -1400, "height": 55, "kind": "tower" },
+    { "id": "bayview-shell", "name": "Bayview Shell", "district": "bayview", "x": 80, "z": 2080, "height": 8, "kind": "civic" },
+    { "id": "central-bascule", "name": "Central Bascule", "district": "marina", "x": 900, "z": 480, "height": 12, "kind": "bridge" }
+  ]
+}
