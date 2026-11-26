@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
-import { useAnimations, useGLTF } from "@react-three/drei";
-import { CanvasTexture, DoubleSide, RepeatWrapping, type Group } from "three";
+import { useAnimations, useGLTF, useTexture } from "@react-three/drei";
+import {
+  CanvasTexture,
+  DoubleSide,
+  NoColorSpace,
+  PlaneGeometry,
+  RepeatWrapping,
+  SRGBColorSpace,
+  type Group,
+  type Texture,
+} from "three";
 import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { MarinaOfficeInterior } from "@/game/world/interiors/EnterableBuilding";
 import { SOLIDS, type Solid } from "@/game/world/coast/layout";
@@ -21,15 +30,18 @@ export function CoastDistrict({ collectedIds, waypoint }: CoastDistrictProps) {
   const taken = useMemo(() => new Set(collectedIds), [collectedIds]);
   return (
     <group>
-      <RigidBody type="fixed" position={[0, -0.5, 8]} colliders="cuboid" friction={1}>
-        <mesh receiveShadow>
-          <boxGeometry args={[100, 1, 64]} />
-          <meshStandardMaterial color="#6e6a62" roughness={1} />
-        </mesh>
-      </RigidBody>
+      <mesh position={[0, -0.5, 8]}>
+        <boxGeometry args={[100, 1, 64]} />
+        <meshStandardMaterial color="#c6b6a2" roughness={1} />
+      </mesh>
+      <Suspense fallback={null}>
+        <LandCover />
+      </Suspense>
       <Ocean />
       <Slab x={-28} z={-21.7} w={9} d={3.4} color="#8a6844" />
-      <Roads />
+      <Suspense fallback={null}>
+        <Roads />
+      </Suspense>
       <ParkGreen />
       <Benches />
       <Signals />
@@ -45,17 +57,24 @@ export function CoastDistrict({ collectedIds, waypoint }: CoastDistrictProps) {
   );
 }
 
+function LandCover() {
+  const concrete = useSurface("/textures/concrete");
+  return <TiledPlane x={0} z={8} w={100} d={64} y={0.012} tile={4} maps={concrete} color="#c6b6a2" roughness={0.92} />;
+}
+
 function Roads() {
+  const asphalt = useSurface("/textures/asphalt");
+  const concrete = useSurface("/textures/concrete");
   return (
     <group>
-      <Road x={0} z={-12.5} w={90} d={7} />
-      <Road x={0} z={15.5} w={90} d={7} />
-      <Road x={0} z={1.5} w={7} d={35} />
-      <Slab x={0} z={-20.2} w={90} d={6} color="#b9b3a8" />
-      <Slab x={-24} z={-8.3} w={40} d={1.5} color="#c4beb4" />
-      <Slab x={24} z={-8.3} w={40} d={1.5} color="#c4beb4" />
-      <Slab x={-24} z={11.2} w={40} d={1.4} color="#c4beb4" />
-      <Slab x={24} z={11.2} w={40} d={1.4} color="#c4beb4" />
+      <Road x={0} z={-12.5} w={90} d={7} maps={asphalt} />
+      <Road x={0} z={15.5} w={90} d={7} maps={asphalt} />
+      <Road x={0} z={1.5} w={7} d={35} maps={asphalt} />
+      <TiledPlane x={0} z={-20.2} w={90} d={6} y={0.02} tile={2} maps={concrete} color="#d5cfc4" roughness={0.84} />
+      <TiledPlane x={-24} z={-8.3} w={40} d={1.5} y={0.02} tile={2} maps={concrete} color="#d5cfc4" roughness={0.84} />
+      <TiledPlane x={24} z={-8.3} w={40} d={1.5} y={0.02} tile={2} maps={concrete} color="#d5cfc4" roughness={0.84} />
+      <TiledPlane x={-24} z={11.2} w={40} d={1.4} y={0.02} tile={2} maps={concrete} color="#d5cfc4" roughness={0.84} />
+      <TiledPlane x={24} z={11.2} w={40} d={1.4} y={0.02} tile={2} maps={concrete} color="#d5cfc4" roughness={0.84} />
       {[-2.2, -0.7, 0.8, 2.3].map((x) => (
         <Slab key={x} x={x} z={-15.7} w={0.45} d={2.4} color="#efe7da" />
       ))}
@@ -66,13 +85,72 @@ function Roads() {
   );
 }
 
-function Road({ x, z, w, d }: { x: number; z: number; w: number; d: number }) {
+type SurfaceMaps = { map: Texture; normalMap: Texture; roughnessMap: Texture };
+
+function useSurface(folder: string): SurfaceMaps {
+  const maps = useTexture({
+    map: `${folder}/diff.jpg`,
+    normalMap: `${folder}/nor.jpg`,
+    roughnessMap: `${folder}/rough.jpg`,
+  });
+  useLayoutEffect(() => {
+    maps.map.colorSpace = SRGBColorSpace;
+    maps.normalMap.colorSpace = NoColorSpace;
+    maps.roughnessMap.colorSpace = NoColorSpace;
+    for (const tex of [maps.map, maps.normalMap, maps.roughnessMap]) {
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.anisotropy = 8;
+    }
+  }, [maps]);
+  return maps;
+}
+
+function TiledPlane({
+  x,
+  z,
+  w,
+  d,
+  y,
+  tile,
+  maps,
+  color,
+  roughness,
+}: {
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  y: number;
+  tile: number;
+  maps: SurfaceMaps;
+  color: string;
+  roughness: number;
+}) {
+  const geometry = useMemo(() => {
+    const plane = new PlaneGeometry(w, d);
+    plane.rotateX(-Math.PI / 2);
+    const uv = plane.attributes.uv;
+    for (let i = 0; i < uv.count; i += 1) uv.setXY(i, uv.getX(i) * (w / tile), uv.getY(i) * (d / tile));
+    return plane;
+  }, [w, d, tile]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
   return (
-    <mesh position={[x, 0.015, z]} receiveShadow>
-      <boxGeometry args={[w, 0.03, d]} />
-      <meshStandardMaterial color="#2c3136" roughness={0.94} />
+    <mesh geometry={geometry} position={[x, y, z]} receiveShadow>
+      <meshStandardMaterial
+        color={color}
+        map={maps.map}
+        normalMap={maps.normalMap}
+        roughnessMap={maps.roughnessMap}
+        roughness={roughness}
+        metalness={0.02}
+      />
     </mesh>
   );
+}
+
+function Road({ x, z, w, d, maps }: { x: number; z: number; w: number; d: number; maps: SurfaceMaps }) {
+  return <TiledPlane x={x} z={z} w={w} d={d} y={0.02} tile={2.5} maps={maps} color="#8a9096" roughness={0.9} />;
 }
 
 function Slab({ x, z, w, d, color }: { x: number; z: number; w: number; d: number; color: string }) {
@@ -359,6 +437,12 @@ function windowTexture(): CanvasTexture | null {
 }
 
 let sharedWindows: CanvasTexture | null = null;
+
+for (const folder of ["/textures/asphalt", "/textures/concrete"]) {
+  useTexture.preload(`${folder}/diff.jpg`);
+  useTexture.preload(`${folder}/nor.jpg`);
+  useTexture.preload(`${folder}/rough.jpg`);
+}
 
 useGLTF.preload("/models/environment/palm.glb");
 useGLTF.preload("/models/environment/tree.glb");
