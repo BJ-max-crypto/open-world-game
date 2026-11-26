@@ -1,6 +1,8 @@
 # The Coast — geographic masterplan
 
-Proposal only. The playable marina, the player, missions, and the current scene are unchanged. Nothing in this folder is loaded by the game.
+Approved on 26 Nov 2026. The five choices at the end of this document were accepted as written.
+
+The coordinate frame now lives in `src/game/world/masterplan/frame.ts`. Gameplay stays in local meters and adds the anchor (640, 620) to reach this map. The first built slice is the near yacht basin: the water south and east of the existing quay, out to the edge of the view. The rest of the 33 km² is not generated. The player, missions, kayak limits, and building colliders are unchanged.
 
 The city is an original coastal place with a Miami-like climate and building culture: glass towers, canal houses, coral-stucco shops, palms, and a working port. It is not Miami, and it does not reuse Miami street names or real towers. The reference photographs are massing and planting direction, not textures.
 
@@ -144,7 +146,7 @@ The in-game minimap keeps drawing the playable district. This masterplan map doe
 
 ## 7. Procedural generation, when building starts
 
-Not built in this change. The data model is `world.json`. A later generator would:
+The frame module is in the game. The generator is not. `world.json` is still the data model. A later generator would:
 
 1. Cut the world into 200 m chunks. 6400 / 200 = 32 columns and 5200 / 200 = 26 rows. A chunk id is `floor((x + 3200) / 200)` and `floor((z + 2600) / 200)`.
 2. Rasterize water, islands, and district ids into the chunk.
@@ -179,12 +181,14 @@ Facades that repeat are a Blender script problem: four families per district, ge
 
 `docs/masterplan/coast-masterplan.svg` is the top-down drawing. `node docs/masterplan/render-map.mjs` redraws it from `world.json` and refuses to write if two districts overlap or a landmark sits outside its district.
 
-## Approval, before any new terrain
+## Approval
 
-This is the plan to accept or mark up. The next build, after a yes, would be one chunk at the existing marina matched to these coordinates, not the whole 33 km².
+Accepted on 26 Nov 2026, as written:
 
 1. Atlantic on the east, and the current water remaining the south side of the yacht basin.
 2. The eight district rectangles and their height ranges.
 3. Coast Highway on the west side of Downtown, and three bay crossings.
 4. Landmark sites in the table above.
 5. 200 m chunks, with `layout.ts` still owning the playable marina until that chunk is replaced on purpose.
+
+The playable block crosses the corner of chunks (19, 15) and (19, 16) because the anchor sits near a chunk boundary. The near basin water covers the south of that corner. Later chunks wait.

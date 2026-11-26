@@ -3,6 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Color, ShaderMaterial, Vector3 } from "three";
+import { NEAR_BASIN } from "@/game/world/masterplan/frame";
 
 const vertex = /* glsl */ `
   uniform float uTime;
@@ -66,9 +67,15 @@ export function Ocean() {
     ref.current.uniforms.uTime.value = clock.elapsedTime;
   });
 
+  const width = NEAR_BASIN.x1 - NEAR_BASIN.x0;
+  const depth = NEAR_BASIN.z1 - NEAR_BASIN.z0;
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -48]} material={material}>
-      <planeGeometry args={[180, 52, 70, 28]} />
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[(NEAR_BASIN.x0 + NEAR_BASIN.x1) / 2, 0, (NEAR_BASIN.z0 + NEAR_BASIN.z1) / 2]}
+      material={material}
+    >
+      <planeGeometry args={[width, depth, 96, 48]} />
     </mesh>
   );
 }
