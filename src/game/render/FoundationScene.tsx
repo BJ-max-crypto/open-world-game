@@ -11,6 +11,7 @@ import type { LookState } from "@/game/input/usePointerLock";
 import { ThirdPersonPlayer } from "@/game/player/ThirdPersonPlayer";
 import type { PlayerPose } from "@/game/player/pose";
 import type { KayakSeat } from "@/game/world/life/kayak";
+import { DowntownBlock } from "@/game/world/solara/DowntownBlock";
 import { SolaraSite } from "@/game/world/solara/SolaraSite";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
@@ -65,11 +66,11 @@ export function FoundationScene({ look, keys, canvasRef, haltRef, pose, onReady 
             castShadow
             shadow-mapSize={[4096, 4096]}
             shadow-camera-near={10}
-            shadow-camera-far={280}
-            shadow-camera-left={-90}
-            shadow-camera-right={90}
-            shadow-camera-top={90}
-            shadow-camera-bottom={-90}
+            shadow-camera-far={420}
+            shadow-camera-left={-150}
+            shadow-camera-right={150}
+            shadow-camera-top={150}
+            shadow-camera-bottom={-150}
             shadow-bias={-0.00025}
             shadow-normalBias={0.06}
           />
@@ -91,6 +92,7 @@ export function FoundationScene({ look, keys, canvasRef, haltRef, pose, onReady 
           <ThirdPersonCamera bodyRef={bodyRef} look={look} />
           <Suspense fallback={null}>
             <SolaraSite />
+            <DowntownBlock />
             <MarkReady onReady={onReady} />
           </Suspense>
         </Physics>

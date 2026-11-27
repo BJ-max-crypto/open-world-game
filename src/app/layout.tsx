@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "The Coast — Solara Tower",
-  description: "Walk the plaza around Solara Tower.",
+  description: "Walk the downtown block around Solara Tower.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
