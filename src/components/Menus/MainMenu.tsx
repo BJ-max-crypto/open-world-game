@@ -5,12 +5,12 @@ export function MainMenu() {
     <div className="nl-hero-copy">
       <p className="nl-kicker">Solara Tower</p>
       <h1>
-        One tower.
+        Solara,
         <br />
-        The whole site.
+        and the first block.
       </h1>
       <p className="nl-lede">
-        Walk the plaza and look up. Solara is a 180 meter residential tower, and the rest of the coast is cleared while it is under review.
+        Walk the streets around the tower. Solara stays the landmark. Caliza, Vanta, and Cayo are the first three neighbors.
       </p>
       <div className="nl-hero-actions">
         <Link className="nl-button" href="/game">
