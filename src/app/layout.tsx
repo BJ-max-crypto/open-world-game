@@ -6,8 +6,8 @@ import "@fontsource/outfit/500.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "The Coast",
-  description: "A waterfront district. Walk, take a delivery, and get paid.",
+  title: "The Coast — Solara Tower",
+  description: "Walk the plaza around Solara Tower.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

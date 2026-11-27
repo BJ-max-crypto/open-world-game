@@ -44,8 +44,8 @@ export function nextClip(state: ClipState, motion: MotionSample, dt: number): Cl
 
 /** Match the clip to travel speed so the feet do not skate. */
 export function clipTimeScale(clip: ClipId, speed: number): number {
-  if (clip === "walk") return clamp(speed / 1.55, 0.7, 1.25);
-  if (clip === "run") return clamp(speed / 4.3, 0.75, 1.25);
+  if (clip === "walk") return clamp(speed / 1.55, 0.7, 1.35);
+  if (clip === "run") return clamp(speed / 4.3, 0.75, 1.35);
   return 1;
 }
 
