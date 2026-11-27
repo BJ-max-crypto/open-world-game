@@ -1,0 +1,55 @@
+{
+  "height": 180.0,
+  "roof": 173.0,
+  "floors": 48,
+  "podiumFloors": 5,
+  "podiumHeight": 22.5,
+  "podium": {
+    "rx": 22.4,
+    "ry": 16.2,
+    "n": 2.7
+  },
+  "tower": {
+    "rx": 14.2,
+    "ry": 10.8,
+    "n": 2.35
+  },
+  "entrance": {
+    "halfWidth": 4.3,
+    "height": 7.55,
+    "face": "-Z",
+    "blenderFace": "+Y"
+  },
+  "columns": [
+    {
+      "x": -3.15,
+      "z": -21.05,
+      "r": 0.36
+    },
+    {
+      "x": 3.15,
+      "z": -21.05,
+      "r": 0.36
+    }
+  ],
+  "pools": [
+    {
+      "x": -11.5,
+      "z": -20.9,
+      "hx": 3.4,
+      "hz": 2.7
+    },
+    {
+      "x": 11.5,
+      "z": -20.9,
+      "hx": 3.4,
+      "hz": 2.7
+    }
+  ],
+  "core": {
+    "hx": 3.4,
+    "hz": 2.9,
+    "z": -0.3
+  },
+  "note": "glTF (x, y, z) = Blender (x, z, -y). Entrance faces three.js -Z."
+}
