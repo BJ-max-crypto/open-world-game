@@ -14,6 +14,7 @@ import type { KayakSeat } from "@/game/world/life/kayak";
 import { DowntownBlock } from "@/game/world/solara/DowntownBlock";
 import { PhaseOne } from "@/game/world/solara/PhaseOne";
 import { SolaraSite } from "@/game/world/solara/SolaraSite";
+import { HarborFront } from "@/game/world/solara/HarborFront";
 import { Streetscape } from "@/game/world/solara/Streetscape";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
@@ -97,6 +98,7 @@ export function FoundationScene({ look, keys, canvasRef, haltRef, pose, onReady 
             <DowntownBlock />
             <PhaseOne />
             <Streetscape />
+            <HarborFront />
             <MarkReady onReady={onReady} />
           </Suspense>
         </Physics>
