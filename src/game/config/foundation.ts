@@ -7,6 +7,8 @@ export const FOUNDATION = {
   /** Meters per second squared after the direction is released. */
   deceleration: 12.25,
   jumpVelocity: 5.2,
+  /** Temporary. Meters per second while Space is held. Remove with the lift gesture. */
+  liftSpeed: 12,
   gravity: -22,
   /** Capsule matches the 1.83 m humanoid: total height is 2 * (half + radius). */
   capsuleHalf: 0.635,

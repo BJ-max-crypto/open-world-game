@@ -5,10 +5,10 @@ import { useFrame } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody, useRapier, type RapierCollider, type RapierRigidBody } from "@react-three/rapier";
 import type { Group } from "three";
 import { FOUNDATION } from "@/game/config/foundation";
-import { consumePressed, movementInput, type KeyState } from "@/game/input/useKeyState";
+import { consumePressed, movementInput, takeSpaceGesture, type KeyState } from "@/game/input/useKeyState";
 import type { LookState } from "@/game/input/usePointerLock";
 import type { MotionSample } from "@/game/player/locomotion";
-import { approachVelocity, dampAngle, wishDirection, stepVerticalVelocity, yawToward } from "@/game/player/movement";
+import { approachVelocity, dampAngle, wishDirection, stepFlight, yawToward, type Flight } from "@/game/player/movement";
 import { HumanAvatar } from "@/game/player/HumanAvatar";
 import type { PlayerPose } from "@/game/player/pose";
 import type { KayakSeat } from "@/game/world/life/kayak";
@@ -34,6 +34,10 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
   const controllerRef = useRef<ReturnType<typeof world.createCharacterController> | null>(null);
   const vy = useRef(0);
   const grounded = useRef(true);
+  const flight = useRef<Flight>("ground");
+  const suppressRise = useRef(false);
+  const lastSpaceTap = useRef(0);
+  const place = useRef({ x: 0, y: 0, z: 0 });
   const velocity = useRef({ x: 0, z: 0 });
   const accumulator = useRef(0);
   const motion = useRef<MotionSample>({ speed: 0, vertical: 0, grounded: true, sprinting: false });
@@ -63,18 +67,54 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
 
     // Catch up after a hitch. Sixty frames a second still takes a single step.
     accumulator.current = Math.min(accumulator.current + delta, 0.25);
-    const jumpPressed = consumePressed(keyState, "Space");
-    let jumpLeft = jumpPressed;
+    consumePressed(keyState, "Space");
+    const taps = keyState.spaceTaps.splice(0, keyState.spaceTaps.length);
+    const gesture = takeSpaceGesture(taps, lastSpaceTap.current, 400);
+    lastSpaceTap.current = gesture.previousTap;
+    const lifted = stepFlight(
+      flight.current,
+      grounded.current,
+      keyState.held.has("Space"),
+      gesture.double,
+      suppressRise.current,
+    );
+    flight.current = lifted.flight;
+    suppressRise.current = lifted.suppressRise;
+    const origin = body.translation();
+    place.current.x = origin.x;
+    place.current.y = origin.y;
+    place.current.z = origin.z;
     let steps = 0;
     while (accumulator.current >= FIXED_STEP && steps < 12) {
       accumulator.current -= FIXED_STEP;
-      integrate(FIXED_STEP, jumpLeft);
-      jumpLeft = false;
+      integrate(FIXED_STEP, 0, 0, false);
       steps += 1;
+    }
+    // Small steps the controller will accept, enough of them to match the clock.
+    const clockDt = Math.min(Math.max(delta, FIXED_STEP), 0.5);
+    if (flight.current === "rise") {
+      let left = FOUNDATION.liftSpeed * clockDt;
+      const bit = FOUNDATION.liftSpeed * FIXED_STEP;
+      let n = 0;
+      while (left > 0.01 && n < 40 && flight.current === "rise") {
+        const climb = Math.min(left, bit);
+        integrate(FIXED_STEP, climb, 0, true);
+        left -= climb;
+        n += 1;
+      }
+    } else if (flight.current === "fall") {
+      let left = clockDt;
+      let n = 0;
+      while (left > 0.001 && n < 40 && flight.current === "fall") {
+        const drop = Math.min(left, FIXED_STEP);
+        integrate(FIXED_STEP, 0, drop, true);
+        left -= drop;
+        n += 1;
+      }
     }
   });
 
-  function integrate(dt: number, jumpPressed: boolean) {
+  function integrate(dt: number, climb = 0, dropDt = 0, verticalOnly = false) {
     const body = bodyRef.current;
     const collider = colliderRef.current;
     const controller = controllerRef.current;
@@ -90,6 +130,8 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
       velocity.current = { x: 0, z: 0 };
       vy.current = 0;
       grounded.current = true;
+      flight.current = "ground";
+      suppressRise.current = false;
       motion.current = { speed: 0, vertical: 0, grounded: true, sprinting: false };
       pose.current = { x: spot.x, z: spot.z, yaw: pose.current.yaw, speed: 0 };
       return;
@@ -102,6 +144,8 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
       velocity.current = { x: 0, z: 0 };
       vy.current = 0;
       grounded.current = true;
+      flight.current = "ground";
+      suppressRise.current = false;
       const visual = visualRef.current;
       if (visual) visual.rotation.y = seat.yaw;
       motion.current = { speed: 0, vertical: 0, grounded: true, sprinting: false };
@@ -117,31 +161,48 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
     const targetSpeed = !moving || halted ? 0 : sprint ? FOUNDATION.sprintSpeed : FOUNDATION.walkSpeed;
     const rate = moving && !halted ? FOUNDATION.acceleration : FOUNDATION.deceleration;
     velocity.current = halted ? { x: 0, z: 0 } : approachVelocity(velocity.current, wish, targetSpeed, rate, dt);
-    const jump = !halted && jumpPressed;
-    let vertical = stepVerticalVelocity(vy.current, grounded.current, jump, FOUNDATION.gravity, dt, FOUNDATION.jumpVelocity);
+    let vertical = 0;
+    let nextVy = 0;
+    if (flight.current === "fall" && dropDt > 0) {
+      nextVy = vy.current + FOUNDATION.gravity * dropDt;
+      vertical = (((vy.current + nextVy) * 0.5) * dropDt) / dt;
+    } else if (flight.current === "rise" && !halted && climb > 0) {
+      nextVy = FOUNDATION.liftSpeed;
+      vertical = climb / dt;
+    }
 
-    if (vertical > 0) controller.disableSnapToGround();
+    if (flight.current === "rise" || flight.current === "hover") controller.disableSnapToGround();
     else controller.enableSnapToGround(FOUNDATION.snapDistance);
 
     controller.computeColliderMovement(collider, {
-      x: velocity.current.x * dt,
+      x: verticalOnly ? 0 : velocity.current.x * dt,
       y: vertical * dt,
-      z: velocity.current.z * dt,
+      z: verticalOnly ? 0 : velocity.current.z * dt,
     });
     const corrected = controller.computedMovement();
-    const pos = body.translation();
+    const pos = place.current;
     const next = {
       x: pos.x + corrected.x,
       y: pos.y + corrected.y,
       z: pos.z + corrected.z,
     };
+    pos.x = next.x;
+    pos.y = next.y;
+    pos.z = next.z;
     body.setNextKinematicTranslation(next);
 
     const onGround = controller.computedGrounded();
-    grounded.current = onGround;
-    if (onGround && vertical < 0) vertical = 0;
-    if (vertical > 0 && corrected.y < vertical * dt * 0.5) vertical = 0;
-    vy.current = vertical;
+    const feet = next.y - (FOUNDATION.capsuleHalf + FOUNDATION.capsuleRadius);
+    const landed = onGround || feet < 0.2;
+    grounded.current = onGround || (flight.current === "ground" && landed);
+    if (landed && flight.current === "fall") {
+      flight.current = "ground";
+      suppressRise.current = false;
+      nextVy = 0;
+    }
+    if (onGround && nextVy < 0) nextVy = 0;
+    if (nextVy > 0 && corrected.y < vertical * dt * 0.5) nextVy = 0;
+    vy.current = flight.current === "ground" || flight.current === "hover" ? 0 : nextVy;
 
     const speed = Math.hypot(velocity.current.x, velocity.current.z);
     const visual = visualRef.current;
@@ -153,7 +214,12 @@ export function ThirdPersonPlayer({ bodyRef, look, keys, haltRef, paddleRef, sea
         dt,
       );
     }
-    motion.current = { speed, vertical, grounded: onGround, sprinting: sprint && moving };
+    motion.current = {
+      speed,
+      vertical: flight.current === "hover" || flight.current === "ground" ? 0 : nextVy,
+      grounded: flight.current === "ground" || flight.current === "hover" || feet < 0.2,
+      sprinting: sprint && moving,
+    };
     pose.current = {
       x: next.x,
       z: next.z,

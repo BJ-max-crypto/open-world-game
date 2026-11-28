@@ -66,6 +66,34 @@ export function wishDirection(yaw: number, input: MoveInput): Planar {
   return { x: x / length, z: z / length };
 }
 
+export type Flight = "ground" | "rise" | "hover" | "fall";
+
+/**
+ * Temporary lift. Hold Space to climb, release to hover, double-tap Space to drop.
+ * `suppressRise` keeps the second tap of a double-tap from climbing again while it is still held.
+ * Walking off a ledge falls. A double-tap on the ground stays on the ground.
+ */
+export function stepFlight(
+  flight: Flight,
+  grounded: boolean,
+  spaceHeld: boolean,
+  spaceDouble: boolean,
+  suppressRise: boolean,
+): { flight: Flight; suppressRise: boolean } {
+  if (spaceDouble) {
+    return grounded
+      ? { flight: "ground", suppressRise: false }
+      : { flight: "fall", suppressRise: true };
+  }
+  if (suppressRise && spaceHeld) return { flight: "fall", suppressRise: true };
+  if (spaceHeld) return { flight: "rise", suppressRise: false };
+  if (flight === "rise" || flight === "hover") return { flight: "hover", suppressRise: false };
+  if (flight === "fall" || (flight === "ground" && !grounded)) {
+    return { flight: grounded ? "ground" : "fall", suppressRise: false };
+  }
+  return { flight: "ground", suppressRise: false };
+}
+
 export function stepVerticalVelocity(
   vy: number,
   grounded: boolean,
