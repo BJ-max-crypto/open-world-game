@@ -12,6 +12,7 @@ import { ThirdPersonPlayer } from "@/game/player/ThirdPersonPlayer";
 import type { PlayerPose } from "@/game/player/pose";
 import type { KayakSeat } from "@/game/world/life/kayak";
 import { DowntownBlock } from "@/game/world/solara/DowntownBlock";
+import { PhaseOne } from "@/game/world/solara/PhaseOne";
 import { SolaraSite } from "@/game/world/solara/SolaraSite";
 
 function MarkReady({ onReady }: { onReady: () => void }) {
@@ -66,18 +67,18 @@ export function FoundationScene({ look, keys, canvasRef, haltRef, pose, onReady 
             castShadow
             shadow-mapSize={[4096, 4096]}
             shadow-camera-near={10}
-            shadow-camera-far={420}
-            shadow-camera-left={-150}
-            shadow-camera-right={150}
-            shadow-camera-top={150}
-            shadow-camera-bottom={-150}
+            shadow-camera-far={520}
+            shadow-camera-left={-220}
+            shadow-camera-right={220}
+            shadow-camera-top={220}
+            shadow-camera-bottom={-220}
             shadow-bias={-0.00025}
             shadow-normalBias={0.06}
           />
           <directionalLight position={[-24, 18, 30]} intensity={0.22} color="#b7c9dc" />
           {/* Ground lives here so a late model suspend cannot spawn it under a falling player. */}
-          <RigidBody type="fixed" position={[0, -0.5, -8]} colliders={false} friction={1}>
-            <CuboidCollider args={[120, 0.5, 120]} />
+          <RigidBody type="fixed" position={[0, -0.5, 0]} colliders={false} friction={1}>
+            <CuboidCollider args={[200, 0.5, 200]} />
           </RigidBody>
           <ThirdPersonPlayer
             bodyRef={bodyRef}
@@ -93,6 +94,7 @@ export function FoundationScene({ look, keys, canvasRef, haltRef, pose, onReady 
           <Suspense fallback={null}>
             <SolaraSite />
             <DowntownBlock />
+            <PhaseOne />
             <MarkReady onReady={onReady} />
           </Suspense>
         </Physics>

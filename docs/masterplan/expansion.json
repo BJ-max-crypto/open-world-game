@@ -1,0 +1,49 @@
+{
+  "title": "The Coast — city expansion",
+  "note": "The built towers stay where they are. Downtown is the waterfront around them. The older district rectangles in world.json stay in code so the marina tests keep passing. This file is the layout the phases build from.",
+  "anchor": { "worldX": 640, "worldZ": 620 },
+  "bounds": { "x0": -3200, "x1": 3200, "z0": -2600, "z1": 2600 },
+  "districts": [
+    { "id": "downtown", "name": "Downtown", "phase": 1, "x0": -200, "x1": 1200, "z0": 200, "z1": 1600 },
+    { "id": "urban", "name": "Urban residential", "phase": 2, "x0": -1600, "x1": -200, "z0": 200, "z1": 1100 },
+    { "id": "lower", "name": "Lower-income neighborhood", "phase": 4, "x0": -1600, "x1": -200, "z0": 1100, "z1": 2600 },
+    { "id": "suburbs", "name": "Suburban neighborhoods", "phase": 6, "x0": -3200, "x1": -1600, "z0": 200, "z1": 2600 },
+    { "id": "luxury", "name": "Luxury coastal", "phase": 3, "x0": -3200, "x1": -200, "z0": -2600, "z1": 200 },
+    { "id": "marina", "name": "Marina", "phase": 5, "x0": -200, "x1": 1200, "z0": -800, "z1": 200 },
+    { "id": "port", "name": "Port", "phase": 5, "x0": -200, "x1": 1700, "z0": -2600, "z1": -800 },
+    { "id": "park", "name": "Bayview park", "phase": 6, "x0": -200, "x1": 1400, "z0": 1600, "z1": 2600 },
+    { "id": "beach", "name": "Beachfront", "phase": 5, "x0": 1700, "x1": 2450, "z0": -1500, "z1": 1800 }
+  ],
+  "water": [
+    { "id": "bay", "x0": 1200, "x1": 1700, "z0": -800, "z1": 1600 },
+    { "id": "atlantic", "x0": 2450, "x1": 3200, "z0": -2600, "z1": 2600 }
+  ],
+  "connections": [
+    { "id": "meridian", "to": "urban", "note": "The north boulevard continues west into the mid-rise streets." },
+    { "id": "lower-grid", "to": "lower", "note": "North of the urban band, streets narrow and the blocks get older." },
+    { "id": "canals", "to": "luxury", "note": "Southwest of downtown, canal houses and private docks." },
+    { "id": "wharf", "to": "marina", "note": "The south wharf road is the seam to the yacht basin." },
+    { "id": "port-road", "to": "port", "note": "The port sits south of the marina, with its own yards." },
+    { "id": "causeway", "to": "beach", "note": "Bay Street aims at the future causeway to the barrier island." }
+  ],
+  "phase1": {
+    "localRoads": [
+      { "id": "wharf", "x": -6, "z": -124, "w": 284, "d": 12 },
+      { "id": "meridian", "x": -5, "z": 118, "w": 330, "d": 18 },
+      { "id": "palm-court", "x": -142, "z": 0, "w": 12, "d": 250 },
+      { "id": "bay-street", "x": 130, "z": 0, "w": 12, "d": 250 }
+    ],
+    "parcels": [
+      { "id": "lumen", "role": "hotel", "x": 90, "z": 76, "hx": 20, "hz": 14 },
+      { "id": "brisa", "role": "stepped residential", "x": 92, "z": -4, "hx": 16, "hz": 14 },
+      { "id": "mercado", "role": "retail block", "x": -98, "z": -86, "hx": 26, "hz": 14 },
+      { "id": "nave", "role": "parking structure", "x": -98, "z": 78, "hx": 24, "hz": 16 }
+    ]
+  },
+  "existingLocal": [
+    { "id": "solara", "x": 0, "z": -8, "hx": 36, "hz": 32, "height": 180 },
+    { "id": "caliza", "x": -80, "z": 4, "hx": 16, "hz": 19, "height": 142 },
+    { "id": "vanta", "x": 7, "z": 68, "hx": 18, "hz": 14, "height": 112 },
+    { "id": "cayo", "x": 20, "z": -76, "hx": 25, "hz": 12, "height": 38 }
+  ]
+}

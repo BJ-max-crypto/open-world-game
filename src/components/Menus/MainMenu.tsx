@@ -10,7 +10,7 @@ export function MainMenu() {
         and the first block.
       </h1>
       <p className="nl-lede">
-        Walk the streets around the tower. Solara stays the landmark. Caliza, Vanta, and Cayo are the first three neighbors.
+        Walk the downtown streets around Solara Tower. Caliza, Vanta, and Cayo stay as they were. Lumen, Brisa, Mercado, and Nave sit on the next blocks.
       </p>
       <div className="nl-hero-actions">
         <Link className="nl-button" href="/game">
