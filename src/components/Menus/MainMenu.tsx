@@ -7,10 +7,10 @@ export function MainMenu() {
       <h1>
         Solara,
         <br />
-        and the first block.
+        and the downtown.
       </h1>
       <p className="nl-lede">
-        Walk the downtown streets around Solara Tower. Caliza, Vanta, and Cayo stay as they were. Lumen, Brisa, Mercado, and Nave sit on the next blocks.
+        Walk the streets around Solara Tower. The towers stay as they were. Plazas, sidewalks, and a palm boulevard now hold the blocks together.
       </p>
       <div className="nl-hero-actions">
         <Link className="nl-button" href="/game">
