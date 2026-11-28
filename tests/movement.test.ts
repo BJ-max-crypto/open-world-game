@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { movementInput } from "../src/game/input/useKeyState.ts";
+import { movementInput, takeSpaceGesture } from "../src/game/input/useKeyState.ts";
 import {
   approachVelocity,
   cameraOffset,
   dampAngle,
   cameraClearance,
+  stepFlight,
   stepVerticalVelocity,
   wishDirection,
   yawToward,
@@ -48,6 +49,36 @@ test("opposite keys cancel and diagonals stay unit length", () => {
   assert.equal(cancel.z, 0);
   const diagonal = wishDirection(0, { forward: true, back: false, left: false, right: true });
   assert.ok(Math.abs(Math.hypot(diagonal.x, diagonal.z) - 1) < 1e-6);
+});
+
+test("holding space climbs, releasing hovers, and a double-tap drops", () => {
+  const climbed = stepFlight("ground", true, true, false, false);
+  assert.deepEqual(climbed, { flight: "rise", suppressRise: false });
+  const hovered = stepFlight("rise", false, false, false, false);
+  assert.deepEqual(hovered, { flight: "hover", suppressRise: false });
+  const dropped = stepFlight("hover", false, true, true, false);
+  assert.deepEqual(dropped, { flight: "fall", suppressRise: true });
+  const stillDropping = stepFlight("fall", false, true, false, true);
+  assert.deepEqual(stillDropping, { flight: "fall", suppressRise: true });
+  const falling = stepFlight("fall", false, false, false, false);
+  assert.deepEqual(falling, { flight: "fall", suppressRise: false });
+  const landed = stepFlight("fall", true, false, false, false);
+  assert.deepEqual(landed, { flight: "ground", suppressRise: false });
+  const groundedDouble = stepFlight("ground", true, false, true, false);
+  assert.deepEqual(groundedDouble, { flight: "ground", suppressRise: false });
+  const ledge = stepFlight("ground", false, false, false, false);
+  assert.equal(ledge.flight, "fall");
+});
+
+test("two space taps inside the window are a double-tap across frames", () => {
+  const first = takeSpaceGesture([1000], 0, 400);
+  assert.equal(first.double, false);
+  const second = takeSpaceGesture([1300], first.previousTap, 400);
+  assert.equal(second.double, true);
+  const late = takeSpaceGesture([2000], second.previousTap, 400);
+  assert.equal(late.double, false);
+  const sameFrame = takeSpaceGesture([3000, 3200], 0, 400);
+  assert.equal(sameFrame.double, true);
 });
 
 test("jump only leaves the ground, and gravity pulls while airborne", () => {

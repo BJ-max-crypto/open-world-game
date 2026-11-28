@@ -11,7 +11,11 @@ export function ControlGuide() {
         <kbd>Shift</kbd>Sprint
       </p>
       <p>
-        <kbd>Space</kbd>Jump
+        <kbd>Space</kbd>Hold to rise
+      </p>
+      <p>
+        <kbd>Space</kbd>
+        <kbd>Space</kbd>Drop
       </p>
       <p>
         <kbd>Mouse</kbd>Look around

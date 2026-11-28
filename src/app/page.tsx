@@ -9,7 +9,7 @@ export default function HomePage() {
         <span>Solara Tower</span>
       </header>
       <MainMenu />
-      <p className="nl-footer-note">Arrow keys to move · Shift to sprint · Space to jump · mouse to look</p>
+      <p className="nl-footer-note">Arrow keys to move · Shift to sprint · hold Space to rise · double-tap Space to drop · mouse to look</p>
       <div className="nl-skyline" aria-hidden>
         <i style={{ height: "42%" }} />
         <i style={{ height: "68%" }} />

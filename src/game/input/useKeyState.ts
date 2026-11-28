@@ -6,6 +6,8 @@ import type { MoveInput } from "@/game/player/movement";
 export interface KeyState {
   held: Set<string>;
   pressed: Set<string>;
+  /** Wall-clock timestamps of Space keydowns since the last read. Temporary lift gesture. */
+  spaceTaps: number[];
 }
 
 function isTyping(target: EventTarget | null): boolean {
@@ -17,6 +19,24 @@ export function consumePressed(state: KeyState, code: string): boolean {
   if (!state.pressed.has(code)) return false;
   state.pressed.delete(code);
   return true;
+}
+
+/**
+ * Temporary lift gesture. Two Space taps inside `windowMs` are a double-tap.
+ * Taps that arrived in earlier frames count through `previousTap`.
+ */
+export function takeSpaceGesture(
+  taps: number[],
+  previousTap: number,
+  windowMs: number,
+): { double: boolean; previousTap: number } {
+  let previous = previousTap;
+  let double = false;
+  for (const tap of taps) {
+    if (previous > 0 && tap - previous <= windowMs) double = true;
+    previous = tap;
+  }
+  return { double, previousTap: taps.length > 0 ? previous : previousTap };
 }
 
 /** Arrow keys are the movement set. Letter keys do not walk. */
@@ -35,7 +55,7 @@ function blocksPageScroll(code: string): boolean {
 
 /** Held keys live in a ref so the simulation can read them without rendering. */
 export function useKeyState(): RefObject<KeyState> {
-  const state = useRef<KeyState>({ held: new Set(), pressed: new Set() });
+  const state = useRef<KeyState>({ held: new Set(), pressed: new Set(), spaceTaps: [] });
 
   useEffect(() => {
     const keys = state.current;
@@ -45,6 +65,7 @@ export function useKeyState(): RefObject<KeyState> {
       if (event.repeat) return;
       keys.held.add(event.code);
       keys.pressed.add(event.code);
+      if (event.code === "Space") keys.spaceTaps.push(event.timeStamp);
     };
     const up = (event: KeyboardEvent) => {
       keys.held.delete(event.code);
@@ -52,6 +73,7 @@ export function useKeyState(): RefObject<KeyState> {
     const blur = () => {
       keys.held.clear();
       keys.pressed.clear();
+      keys.spaceTaps.length = 0;
     };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
